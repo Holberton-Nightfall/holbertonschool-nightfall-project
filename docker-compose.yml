@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nightfall}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nightfall_dev_only}
+      POSTGRES_DB: ${POSTGRES_DB:-nightfall}
+    volumes:
+      - db_data:/var/lib/postgresql/data          # persistance des données
+      - ./db:/docker-entrypoint-initdb.d:ro       # schema + seed exécutés au 1er démarrage
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://${POSTGRES_USER:-nightfall}:${POSTGRES_PASSWORD:-nightfall_dev_only}@db:5432/${POSTGRES_DB:-nightfall}
+      JWT_SECRET: ${JWT_SECRET:-dev_only_not_a_real_secret}
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app          # hot reload : le code local est monté
+      - /app/node_modules       # ...sauf node_modules, qui reste celui du conteneur
+    depends_on:
+      db:
+        condition: service_healthy   # l'API attend que Postgres soit prêt
+
+  web:
+    build: ./frontend
+    environment:
+      VITE_API_URL: http://localhost:3000   # appelé par le NAVIGATEUR, donc localhost et pas "api"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api
+
+volumes:
+  db_data:
