@@ -35,7 +35,7 @@ services:
   web:
     build: ./frontend
     environment:
-      VITE_API_URL: http://localhost:3000   # appelé par le NAVIGATEUR, donc localhost et pas "api"
+      VITE_API_URL: http://localhost:3000/api  # appelé par le NAVIGATEUR, donc localhost et pas "api"
     ports:
       - "5173:5173"
     volumes:
