@@ -178,7 +178,7 @@ https://github.com/tomvieilledent/holbertonschool-nightfall-project
 
     price : 35.00
 
-    imageUrl : /images/bunker-7.jpg
+    imageUrl : /images/bunker-7.jpeg
 
     description : Équipe d'extraction envoyée dans un bunker souterrain. Réactivez le générateur principal et récupérez les recherches du Dr. Vance tout en échappant aux anciens occupants contaminés.
 
@@ -195,7 +195,7 @@ https://github.com/tomvieilledent/holbertonschool-nightfall-project
 
     price : 28.00
 
-    imageUrl : /images/dead-zone.jpg
+    imageUrl : /images/dead-zone.jpeg
 
     description : Votre véhicule blindé est en panne en pleine zone de quarantaine. Le point d'extraction est à 500 mètres : courez, traversez des ruines et débloquez des accès sous une attaque constante de Rôdeurs.
 
@@ -212,7 +212,7 @@ https://github.com/tomvieilledent/holbertonschool-nightfall-project
 
     price : 42.00
 
-    imageUrl : /images/slaughterhouse.jpg
+    imageUrl : /images/slaughterhouse.jpeg
 
     description : Enchaînés dans une chambre froide, vous êtes aux mains d'une tribu de cannibales mutants. Libérez-vous et trouvez la sortie avant leur retour. Effets gore et obscurité totale.
 
@@ -229,7 +229,7 @@ https://github.com/tomvieilledent/holbertonschool-nightfall-project
 
     price : 32.00
 
-    imageUrl : /images/cyber-hive.jpg
+    imageUrl : /images/cyber-hive.jpeg
 
     description : Une IA tente d'infecter l'humanité avec un nano-virus. Infiltrez le complexe, hackez les terminaux et évitez les drones ainsi que les humains "Transférés" pour détruire le noyau central.
 
@@ -246,7 +246,7 @@ https://github.com/tomvieilledent/holbertonschool-nightfall-project
 
     price : 25.00
 
-    imageUrl : /images/wasteland-convoy.jpg
+    imageUrl : /images/wasteland-convoy.jpeg
 
     description : Traversez un canyon désertique à bord de camions blindés. Équipés de lanceurs, défendez le convoi contre les vagues de pillards en buggys dans une ambiance à la Mad Max.
 
@@ -263,6 +263,6 @@ https://github.com/tomvieilledent/holbertonschool-nightfall-project
 
     price : 38.00
 
-    imageUrl : /images/ground-zero.jpg
+    imageUrl : /images/ground-zero.jpeg
 
     description : Retranchés dans une église fortifiée, tenez votre position pendant 20 minutes avec des munitions limitées. Barricadez les accès et repoussez les hordes en attendant l'hélicoptère d'évacuation.
