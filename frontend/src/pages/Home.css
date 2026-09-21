@@ -1,0 +1,29 @@
+.hero { position: relative; min-height: 70vh; display: flex; align-items: flex-end; margin-inline: calc(var(--space-3) * -1); overflow: hidden; border-bottom: 1px solid var(--border-accent); }
+.hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(.5) contrast(1.15) brightness(.55) sepia(.25); }
+.hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 0%, rgba(8, 14, 20, .55) 45%, rgba(8, 14, 20, .2) 100%), radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, .8) 100%); }
+.hero__content { position: relative; z-index: 1; padding: var(--space-5) var(--space-3); max-width: 720px; }
+.hero__alert { margin-bottom: var(--space-3); animation: blink 1.6s steps(2, start) infinite; }
+.hero__title { font-size: clamp(3rem, 14vw, 7rem); font-weight: 900; margin: 0 0 var(--space-3); color: var(--text); text-shadow: 0 0 12px rgba(255, 13, 57, .8), 0 0 40px rgba(255, 13, 57, .35); }
+.hero__sub { font-size: 1.1rem; color: var(--text); max-width: 46ch; margin: 0 0 var(--space-4); text-shadow: 0 2px 6px #000; }
+.hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.home__stripe { height: 10px; margin: 0 calc(var(--space-3) * -1) var(--space-5); opacity: .7; }
+.home__heading { margin: 0 0 var(--space-4); font-size: 1.5rem; color: var(--accent); }
+
+.glitch { position: relative; }
+.glitch::before, .glitch::after { content: attr(data-text); position: absolute; inset: 0; pointer-events: none; }
+.glitch::before { color: var(--accent-2); transform: translate(-3px, 0); clip-path: inset(0 0 60% 0); animation: glitch 3.2s infinite steps(1); mix-blend-mode: screen; }
+.glitch::after { color: var(--accent); transform: translate(3px, 0); clip-path: inset(60% 0 0 0); animation: glitch 2.6s infinite steps(1) reverse; mix-blend-mode: screen; }
+
+@keyframes glitch {
+  0%, 88%, 100% { transform: translate(0); opacity: 0; }
+  90% { transform: translate(-4px, 1px); opacity: .9; }
+  93% { transform: translate(4px, -2px); opacity: .9; }
+  96% { transform: translate(-2px, 0); opacity: .9; }
+}
+@keyframes blink { to { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .glitch::before, .glitch::after, .hero__alert { animation: none; } }
+@media (min-width: 768px) {
+  .hero { margin-inline: calc(var(--space-4) * -1); }
+  .hero__content { padding: var(--space-5) var(--space-4); }
+  .home__stripe { margin-inline: calc(var(--space-4) * -1); }
+}
