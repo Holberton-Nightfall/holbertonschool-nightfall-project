@@ -5,10 +5,10 @@ API REST (Node.js / Express / PostgreSQL) du parc immersif NIGHTFALL.
 - **Base URL** : `http://localhost:3000/api`
 - **Format** : JSON en entrée et en sortie (`Content-Type: application/json`)
 - **Authentification** : JWT dans le header `Authorization: Bearer <token>`
-- **Rôles** : `user` (défaut) et `admin`
+- **Rôles** : `member` (défaut) et `admin`
 - **Middlewares** : `requireAuth` (401 si non connecté) et `requireAdmin` (403 si le rôle n'est pas `admin`)
 
-> **Convention de nommage** : les champs JSON suivent les noms des colonnes PostgreSQL (`snake_case`), par exemple `image_url`, `max_participants`. Les expériences sont renvoyées à plat, avec `category_id` et `category_name`.
+> **Convention de nommage** : les champs JSON reprennent exactement les noms des colonnes PostgreSQL (`snake_case`), tels que définis dans `db/01_schema.sql` : `duration_min`, `intensity`, `max_participants`, `participants`, etc. Les expériences sont renvoyées à plat, avec `category_id` et `category_name`.
 
 ## Statut d'implémentation
 
@@ -45,7 +45,7 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 ```json
 {
   "error": "Données invalides",
-  "details": ["participants_count doit être un entier strictement positif"]
+  "details": ["participants doit être un entier strictement positif"]
 }
 ```
 
@@ -70,7 +70,7 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 | ⏳ | GET | `/api/admin/experiences` | Admin | Toutes les expériences (archivées incluses) | `feat/api-admin` |
 | ⏳ | POST | `/api/experiences` | Admin | Créer une expérience | `feat/api-admin` |
 | ⏳ | PUT | `/api/experiences/:id` | Admin | Modifier une expérience | `feat/api-admin` |
-| ⏳ | DELETE | `/api/experiences/:id` | Admin | Supprimer ou archiver | `feat/api-admin` |
+| ⏳ | DELETE | `/api/experiences/:id` | Admin | Archiver (ou supprimer) | `feat/api-admin` |
 | ⏳ | GET | `/api/admin/bookings` | Admin | Toutes les réservations | `feat/api-admin` |
 
 ---
@@ -87,6 +87,8 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 { "status": "ok" }
 ```
 
+Cette route ne teste pas la base de données : elle confirme seulement que le serveur répond.
+
 ---
 
 ## Expériences (catalogue public)
@@ -101,15 +103,15 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 [
   {
     "id": 1,
-    "name": "Laboratoire contaminé",
-    "description": "Échappez-vous d'un laboratoire en quarantaine.",
-    "image_url": "/img/labo.jpg",
-    "duration_minutes": 60,
-    "intensity_level": 4,
+    "name": "Le Bunker 7 — Protocole Lazare",
+    "description": "Équipe d'extraction envoyée dans un bunker souterrain…",
+    "image_url": "/images/bunker-7.jpeg",
+    "duration_min": 45,
+    "intensity": 4,
     "max_participants": 6,
-    "price": "29.90",
-    "category_id": 2,
-    "category_name": "Horreur"
+    "price": "35.00",
+    "category_id": 1,
+    "category_name": "Survie"
   }
 ]
 ```
@@ -121,20 +123,20 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 - Les requêtes SQL sont paramétrées (`$1`, `$2`) pour éviter toute injection.
 - `price` est renvoyé sous forme de chaîne, car le type `NUMERIC` de PostgreSQL est sérialisé ainsi par le driver `pg`. Le front doit le convertir avec `Number()` avant tout calcul.
 
-**Paramètres de requête** (ajoutés par `feat/api-search`, pas encore disponibles avant)
+**Paramètres de requête** (ajoutés par `feat/api-search`, pas disponibles avant)
 
 | Paramètre | Description | Exemple |
 |---|---|---|
-| `search` | Recherche partielle, insensible à la casse, sur le nom | `?search=labo` |
-| `category` | Filtre par id de catégorie | `?category=2` |
+| `search` | Recherche partielle, insensible à la casse, sur le nom | `?search=bunker` |
+| `category` | Filtre par id de catégorie | `?category=1` |
 
-Les paramètres se combinent : `?search=labo&category=2`.
+Les paramètres se combinent : `?search=bunker&category=1`.
 
 ### `GET /api/experiences/:id`
 
 **Accès** : public
 
-**Réponse 200** : l'expérience complète (toutes les colonnes de la table `experiences`, plus `category_name`).
+**Réponse 200** : toutes les colonnes de la table `experiences` (dont `is_archived` et `created_at`), plus `category_name`.
 
 **Erreurs**
 
@@ -175,7 +177,6 @@ Les résultats sont triés par nom.
 ```json
 {
   "first_name": "Alice",
-  "last_name": "Martin",
   "email": "alice@example.com",
   "password": "motdepasse123"
 }
@@ -186,13 +187,13 @@ Les résultats sont triés par nom.
 - Tous les champs sont obligatoires.
 - L'email doit être valide et unique.
 - Le mot de passe fait au moins 8 caractères. Il est hashé avec bcrypt et n'est jamais stocké ni renvoyé en clair.
-- Le champ `role` n'est **jamais** lu depuis le body : tout nouveau compte est `user`.
+- Le champ `role` n'est **jamais** lu depuis le body : tout nouveau compte est `member`.
 
 **Réponse 201**
 
 ```json
 {
-  "user": { "id": 3, "first_name": "Alice", "last_name": "Martin", "email": "alice@example.com", "role": "user" },
+  "user": { "id": 4, "first_name": "Alice", "email": "alice@example.com", "role": "member" },
   "token": "<jwt>"
 }
 ```
@@ -220,7 +221,7 @@ Les résultats sont triés par nom.
 **Réponse 200**
 
 ```json
-{ "id": 3, "first_name": "Alice", "last_name": "Martin", "email": "alice@example.com", "role": "user" }
+{ "id": 4, "first_name": "Alice", "email": "alice@example.com", "role": "member" }
 ```
 
 **Erreurs** : 401
@@ -241,7 +242,7 @@ Toutes les routes de cette section passent par `requireAuth`. L'utilisateur est 
 {
   "experience_id": 1,
   "scheduled_at": "2026-10-15T14:30:00Z",
-  "participants_count": 4
+  "participants": 4
 }
 ```
 
@@ -249,8 +250,8 @@ Toutes les routes de cette section passent par `requireAuth`. L'utilisateur est 
 
 1. L'expérience existe et n'est pas archivée.
 2. `scheduled_at` est une date valide, située dans le futur.
-3. `participants_count` est un entier strictement positif.
-4. `participants_count` ne dépasse pas `max_participants` de l'expérience.
+3. `participants` est un entier strictement positif.
+4. `participants` ne dépasse pas `max_participants` de l'expérience.
 
 **Réponse 201**
 
@@ -259,7 +260,7 @@ Toutes les routes de cette section passent par `requireAuth`. L'utilisateur est 
   "id": 12,
   "experience_id": 1,
   "scheduled_at": "2026-10-15T14:30:00.000Z",
-  "participants_count": 4,
+  "participants": 4,
   "status": "confirmed"
 }
 ```
@@ -279,9 +280,9 @@ Renvoie uniquement les réservations de l'utilisateur connecté, triées par dat
   {
     "id": 12,
     "experience_id": 1,
-    "experience_name": "Laboratoire contaminé",
+    "experience_name": "Le Bunker 7 — Protocole Lazare",
     "scheduled_at": "2026-10-15T14:30:00.000Z",
-    "participants_count": 4,
+    "participants": 4,
     "status": "confirmed",
     "can_cancel": true
   }
@@ -306,7 +307,7 @@ Consultation d'une réservation. Route facultative si le front n'en a pas l'usag
 
 ### `DELETE /api/bookings/:id`
 
-Annule une réservation. La ligne n'est pas supprimée : son statut passe à `cancelled`.
+Annule une réservation. La ligne n'est pas supprimée : son statut passe à `cancelled` et `cancelled_at` est renseigné.
 
 **Vérifications côté back-end (dans cet ordre)**
 
@@ -339,16 +340,16 @@ Renvoie toutes les expériences, y compris archivées, avec le champ `is_archive
 {
   "name": "Bunker abandonné",
   "description": "Survivez 90 minutes dans un bunker sans issue apparente.",
-  "image_url": "/img/bunker.jpg",
+  "image_url": "/images/bunker.jpeg",
   "category_id": 1,
-  "duration_minutes": 90,
-  "intensity_level": 5,
+  "duration_min": 90,
+  "intensity": 5,
   "max_participants": 8,
   "price": 34.5
 }
 ```
 
-**Validation** : champs obligatoires, catégorie existante, `duration_minutes`, `max_participants` et `price` positifs, `intensity_level` entre 1 et 5.
+**Validation** : champs obligatoires, catégorie existante, `duration_min`, `max_participants` strictement positifs, `price` supérieur ou égal à 0, `intensity` entre 1 et 5. Ces bornes sont aussi garanties par les contraintes `CHECK` de la base.
 
 **Réponse 201** : l'expérience créée.
 
@@ -358,20 +359,20 @@ Renvoie toutes les expériences, y compris archivées, avec le champ `is_archive
 
 **Body** : mêmes champs que pour la création.
 
-**Réponse 200** : l'expérience modifiée (le champ `updated_at` est mis à jour par la requête SQL).
+**Réponse 200** : l'expérience modifiée.
 
 **Erreurs** : 400, 401, 403, 404
 
 ### `DELETE /api/experiences/:id`
 
-Comportement retenu :
+Une expérience liée à une réservation ne peut pas être supprimée : la clé étrangère `bookings.experience_id` est en `ON DELETE RESTRICT`. Le comportement retenu est donc :
 
 | Situation | Effet | Réponse |
 |---|---|---|
 | Aucune réservation liée | Suppression réelle | `200 { "message": "Expérience supprimée" }` |
 | Au moins une réservation liée | Archivage (`is_archived = true`) | `200 { "message": "Expérience archivée", "archived": true }` |
 
-**Justification** : l'historique des réservations est conservé sans clé étrangère orpheline, et l'expérience disparaît du catalogue public.
+**Justification** : l'historique des réservations est conservé sans donnée orpheline, et l'expérience disparaît du catalogue public.
 
 **Erreurs** : 401, 403, 404
 
@@ -385,12 +386,12 @@ Comportement retenu :
 [
   {
     "id": 12,
-    "user_id": 3,
-    "user_email": "alice@example.com",
+    "user_id": 2,
+    "user_email": "membre@nightfall.dev",
     "experience_id": 1,
-    "experience_name": "Laboratoire contaminé",
+    "experience_name": "Le Bunker 7 — Protocole Lazare",
     "scheduled_at": "2026-10-15T14:30:00.000Z",
-    "participants_count": 4,
+    "participants": 4,
     "status": "confirmed",
     "created_at": "2026-09-21T10:00:00.000Z"
   }

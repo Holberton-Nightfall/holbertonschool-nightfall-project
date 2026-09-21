@@ -3,8 +3,8 @@ import { pool } from '../config/db.js';
 export async function getExperiences(req, res, next) {
   try {
     const { rows } = await pool.query(
-      `SELECT e.id, e.name, e.description, e.image_url, e.duration_minutes,
-              e.intensity_level, e.max_participants, e.price,
+      `SELECT e.id, e.name, e.description, e.image_url, e.duration_min,
+              e.intensity, e.max_participants, e.price,
               c.id AS category_id, c.name AS category_name
        FROM experiences e
        JOIN categories c ON c.id = e.category_id
