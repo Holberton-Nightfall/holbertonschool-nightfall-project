@@ -165,104 +165,104 @@ https://github.com/tomvieilledent/holbertonschool-nightfall-project
 
 ## Attractions 
 
-1. Le Bunker 7 — Protocole "Lazare"
-title : Le Bunker 7 — Protocole Lazare
+### 1. Le Bunker 7 — Protocole "Lazare"
+    title : Le Bunker 7 — Protocole Lazare
 
-category : Survival
+    category : Survival
 
-intensityLevel : 4
+    intensityLevel : 4
 
-durationMinutes : 45
+    durationMinutes : 45
 
-maxParticipants : 6
+    maxParticipants : 6
 
-price : 35.00
+    price : 35.00
 
-imageUrl : /images/bunker-7.jpg
+    imageUrl : /images/bunker-7.jpg
 
-description : Équipe d'extraction envoyée dans un bunker souterrain. Réactivez le générateur principal et récupérez les recherches du Dr. Vance tout en échappant aux anciens occupants contaminés.
+    description : Équipe d'extraction envoyée dans un bunker souterrain. Réactivez le générateur principal et récupérez les recherches du Dr. Vance tout en échappant aux anciens occupants contaminés.
 
-2. La Zone Morte — Évacuation d'Urgence
-title : La Zone Morte — Évacuation d'Urgence
+### 2. La Zone Morte — Évacuation d'Urgence
+    title : La Zone Morte — Évacuation d'Urgence
 
-category : Action
+    category : Action
 
-intensityLevel : 3
+    intensityLevel : 3
 
-durationMinutes : 30
+    durationMinutes : 30
 
-maxParticipants : 10
+    maxParticipants : 10
 
-price : 28.00
+    price : 28.00
 
-imageUrl : /images/dead-zone.jpg
+    imageUrl : /images/dead-zone.jpg
 
-description : Votre véhicule blindé est en panne en pleine zone de quarantaine. Le point d'extraction est à 500 mètres : courez, traversez des ruines et débloquez des accès sous une attaque constante de Rôdeurs.
+    description : Votre véhicule blindé est en panne en pleine zone de quarantaine. Le point d'extraction est à 500 mètres : courez, traversez des ruines et débloquez des accès sous une attaque constante de Rôdeurs.
 
-3. L'Abattoir — Le Festin des Mutants
-title : L'Abattoir — Le Festin des Mutants
+### 3. L'Abattoir — Le Festin des Mutants
+    title : L'Abattoir — Le Festin des Mutants
 
-category : Horror
+    category : Horror
 
-intensityLevel : 5
+    intensityLevel : 5
 
-durationMinutes : 50
+    durationMinutes : 50
 
-maxParticipants : 4
+    maxParticipants : 4
 
-price : 42.00
+    price : 42.00
 
-imageUrl : /images/slaughterhouse.jpg
+    imageUrl : /images/slaughterhouse.jpg
 
-description : Enchaînés dans une chambre froide, vous êtes aux mains d'une tribu de cannibales mutants. Libérez-vous et trouvez la sortie avant leur retour. Effets gore et obscurité totale.
+    description : Enchaînés dans une chambre froide, vous êtes aux mains d'une tribu de cannibales mutants. Libérez-vous et trouvez la sortie avant leur retour. Effets gore et obscurité totale.
 
-4. La Ruche — Cyber-Infection
-title : La Ruche — Cyber-Infection
+### 4. La Ruche — Cyber-Infection
+    title : La Ruche — Cyber-Infection
 
-category : Sci-Fi
+    category : Sci-Fi
 
-intensityLevel : 3
+    intensityLevel : 3
 
-durationMinutes : 40
+    durationMinutes : 40
 
-maxParticipants : 8
+    maxParticipants : 8
 
-price : 32.00
+    price : 32.00
 
-imageUrl : /images/cyber-hive.jpg
+    imageUrl : /images/cyber-hive.jpg
 
-description : Une IA tente d'infecter l'humanité avec un nano-virus. Infiltrez le complexe, hackez les terminaux et évitez les drones ainsi que les humains "Transférés" pour détruire le noyau central.
+    description : Une IA tente d'infecter l'humanité avec un nano-virus. Infiltrez le complexe, hackez les terminaux et évitez les drones ainsi que les humains "Transférés" pour détruire le noyau central.
 
-5. Le Convoi — Terre Brûlée
-title : Le Convoi — Terre Brûlée
+### 5. Le Convoi — Terre Brûlée
+    title : Le Convoi — Terre Brûlée
 
-category : Action
+    category : Action
 
-intensityLevel : 2
+    intensityLevel : 2
 
-durationMinutes : 30
+    durationMinutes : 30
 
-maxParticipants : 20
+    maxParticipants : 20
 
-price : 25.00
+    price : 25.00
 
-imageUrl : /images/wasteland-convoy.jpg
+    imageUrl : /images/wasteland-convoy.jpg
 
-description : Traversez un canyon désertique à bord de camions blindés. Équipés de lanceurs, défendez le convoi contre les vagues de pillards en buggys dans une ambiance à la Mad Max.
+    description : Traversez un canyon désertique à bord de camions blindés. Équipés de lanceurs, défendez le convoi contre les vagues de pillards en buggys dans une ambiance à la Mad Max.
 
-6. Ground Zero — La Dernière Résistance
-title : Ground Zero — La Dernière Résistance
+### 6. Ground Zero — La Dernière Résistance
+    title : Ground Zero — La Dernière Résistance
 
-category : Survival
+    category : Survival
 
-intensityLevel : 4
+    intensityLevel : 4
 
-durationMinutes : 35
+    durationMinutes : 35
 
-maxParticipants : 15
+    maxParticipants : 15
 
-price : 38.00
+    price : 38.00
 
-imageUrl : /images/ground-zero.jpg
+    imageUrl : /images/ground-zero.jpg
 
-description : Retranchés dans une église fortifiée, tenez votre position pendant 20 minutes avec des munitions limitées. Barricadez les accès et repoussez les hordes en attendant l'hélicoptère d'évacuation.
+    description : Retranchés dans une église fortifiée, tenez votre position pendant 20 minutes avec des munitions limitées. Barricadez les accès et repoussez les hordes en attendant l'hélicoptère d'évacuation.
