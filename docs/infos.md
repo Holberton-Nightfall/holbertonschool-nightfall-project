@@ -27,15 +27,68 @@
     - Interface administrateur
 
 ### c. Les données nécessaires au fonctionnement de l'application
+
+    - Users : id, nom, email, mot de passe (hashé), rôle (admin / membre), date de création
+
+    - Categories : id, nom, description
+
+    - Experiences : id, titre, description, catégorie, prix, intensité, durée, capacité, images, statut (actif / archivé)
+
+    - Sessions (créneaux) : id, expérience, date et heure, places restantes
+
+    - Bookings : id, utilisateur, expérience / session, nombre de places, statut (confirmée / annulée), date de réservation, date d'annulation
+
 ### d. Les interactions entre le Front-end, le Back-end et la base de données
+
+    - Front-end (React) : envoie des requêtes HTTP (Axios / Fetch) vers l'API REST, stocke le token JWT et gère l'état de l'interface.
+
+    - Back-end (Express) : valide les requêtes, vérifie l'authentification et les droits (middleware), applique les règles métier (dates futures, capacité, délai d'annulation de 48h), puis lit / écrit en BDD.
+
+    - Base de données : stocke les données persistantes et renvoie les résultats au Back-end, qui les retourne au Front-end en JSON.
+
+    - Flux type (réservation) : Membre ➔ POST /api/bookings (token JWT) ➔ contrôle des règles ➔ enregistrement en BDD ➔ réponse JSON ➔ mise à jour de l'espace personnel.
 
 
 
 ## 2. Organiser le développement
 
 ### a. Les fonctionnalités à développer en priorité ;
+
+    - Modélisation BDD + seeding
+
+    - Authentification (inscription, connexion, JWT, rôles)
+
+    - Catalogue et fiche détaillée des expériences
+
+    - Système de réservation
+
+    - Docker compose + .env
+
 ### b. Les fonctionnalités obligatoires qui seront intégrées ensuite ;
+
+    - Recherche et filtres (catégorie, prix, intensité)
+
+    - Espace personnel (historique des réservations)
+
+    - Annulation avec règle des 48h
+
+    - Interface administrateur (CRUD / archivage des expériences, dashboard des réservations)
+
+    - Responsive design et charte graphique NIGHTFALL
+
+    - Tests d'intégration et README final
+
 ### c. Les éventuelles fonctionnalités supplémentaires qui ne seront abordées qu'une fois le MVP terminé.
+
+    - Avis et notes sur les expériences
+
+    - Favoris / liste de souhaits
+
+    - Notifications par email (confirmation, rappel, annulation)
+
+    - Paiement en ligne
+
+    - Statistiques avancées côté admin
 
 ## 3. Répartir les rôles
 
