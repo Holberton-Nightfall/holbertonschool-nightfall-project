@@ -23,6 +23,7 @@ export default function Header() {
         </button>
         <nav className={`header__nav ${menuOpen ? 'is-open' : ''}`}>
           <NavLink to="/" end>Accueil</NavLink>
+          <NavLink to="/catalogue">Catalogue</NavLink>
           <NavLink to="/about">À propos</NavLink>
         </nav>
       </div>
