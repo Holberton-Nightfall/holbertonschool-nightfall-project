@@ -193,8 +193,8 @@ Les paramètres se combinent : `?search=labo&category=2`.
     "name": "Laboratoire contaminé",
     "description": "Échappez-vous d'un laboratoire en quarantaine.",
     "image_url": "/img/labo.jpg",
-    "duration_minutes": 60,
-    "intensity_level": 4,
+    "duration_min": 60,
+    "intensity": 4,
     "max_participants": 6,
     "price": "29.90",
     "category_id": 2,
@@ -334,14 +334,14 @@ Renvoie toutes les expériences, y compris archivées, avec le champ `is_archive
   "description": "Survivez 90 minutes dans un bunker sans issue apparente.",
   "image_url": "/img/bunker.jpg",
   "category_id": 1,
-  "duration_minutes": 90,
-  "intensity_level": 5,
+  "duration_min": 90,
+  "intensity": 5,
   "max_participants": 8,
   "price": 34.5
 }
 ```
 
-**Validation** : champs obligatoires, catégorie existante, `duration_minutes`, `max_participants` et `price` positifs, `intensity_level` entre 1 et 5.
+**Validation** : champs obligatoires, catégorie existante, `duration_min`, `max_participants` et `price` positifs, `intensity` entre 1 et 5.
 
 **Réponse 201** : l'expérience créée.
 
@@ -383,7 +383,7 @@ Comportement retenu :
     "experience_id": 1,
     "experience_name": "Laboratoire contaminé",
     "scheduled_at": "2026-10-15T14:30:00.000Z",
-    "participants_count": 4,
+    "participants": 4,
     "status": "confirmed",
     "created_at": "2026-09-21T10:00:00.000Z"
   }
