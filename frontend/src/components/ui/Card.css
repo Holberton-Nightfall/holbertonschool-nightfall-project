@@ -1,0 +1,2 @@
+.card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-3); }
+.card__title { margin: 0 0 var(--space-2); }

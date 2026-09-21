@@ -1,0 +1,3 @@
+.btn { min-height: 44px; padding: 0 var(--space-4); border-radius: var(--radius); border: 1px solid transparent; font: inherit; font-weight: 600; cursor: pointer; }
+.btn--primary { background: var(--accent); color: #fff; }
+.btn--ghost { background: none; border-color: var(--border); color: var(--text); }
