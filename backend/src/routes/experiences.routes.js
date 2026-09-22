@@ -1,3 +1,4 @@
+// backend/src/routes/experiences.routes.js
 import { Router } from 'express';
 import { getExperiences, getExperienceById } from '../controllers/experiences.controller.js';
 

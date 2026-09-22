@@ -8,10 +8,10 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 |---|---|---|---|
 | Docker Compose, Dockerfiles, `.env.example` | Benjamin | `feat/docker-compose` | 🟡 |
 | Document de conception | Équipe | `docs/conception` | 🟡 |
-| Contrat d'API (`docs/API.md`) | Jason | `docs/api-contract` | ⬜ |
-| Schéma SQL + seed minimal | Jason | `feat/db-schema` | ⬜ |
-| Initialisation Express + `GET /api/health` | Jason | `feat/backend-init` | ⬜ |
-| `GET /api/experiences` et `GET /api/experiences/:id` | Jason | `feat/api-experiences` | ⬜ |
+| Contrat d'API (`docs/API.md`) | Jason | `docs/api-contract` | ✅ |
+| Schéma SQL + seed minimal | Jason | `feat/db-schema` | ✅ |
+| Initialisation Express + `GET /api/health` | Jason | `feat/backend-init` | ✅ |
+| `GET /api/experiences` et `GET /api/experiences/:id` | Jason | `feat/api-experiences` | ✅ |
 | Initialisation Vite + React Router + layout | Tom | `feat/frontend-init` | ✅ |
 | Page catalogue branchée sur l'API | Tom | `feat/catalogue` | ✅ |
 | README initial | Benjamin | `docs/readme` | ⬜ |
@@ -20,8 +20,8 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 
 | Tâche | Responsable | Branche | Statut |
 |---|---|---|---|
-| Inscription / connexion (bcrypt, JWT) + `GET /api/auth/me` | Jason | `feat/api-auth` | ⬜ |
-| Middlewares `requireAuth` / `requireAdmin` | Jason | `feat/api-auth` | ⬜ |
+| Inscription / connexion (bcrypt, JWT) + `GET /api/auth/me` | Jason | `feat/api-auth` | ✅ |
+| Middlewares `requireAuth` / `requireAdmin` | Jason | `feat/api-auth` | ✅ |
 | `POST /api/bookings` avec validations | Jason | `feat/api-bookings` | ⬜ |
 | `GET /api/bookings` (réservations du membre) | Jason | `feat/api-bookings` | ⬜ |
 | Fiche détaillée d'une expérience | Tom | `feat/experience-detail` | ⬜ |
