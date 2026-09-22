@@ -7,6 +7,7 @@ import {
   updateEmail as apiUpdateEmail,
   updatePassword as apiUpdatePassword,
   deleteAccount as apiDeleteAccount,
+  createBooking as apiCreateBooking,
 } from '../services/api.js';
 
 const TOKEN_KEY = 'nightfall_token';
@@ -71,9 +72,11 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const createBooking = (data) => apiCreateBooking(data, token);
+
   const value = {
     user, status, isAuthenticated: Boolean(user),
-    login, register, logout, updateProfile, updateEmail, updatePassword, deleteAccount,
+    login, register, logout, updateProfile, updateEmail, updatePassword, deleteAccount, createBooking,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -31,3 +31,8 @@ export const updateProfile = (data, token) => request('/auth/me', { method: 'PUT
 export const updateEmail = (data, token) => request('/auth/email', { method: 'PUT', headers: withAuth(token), body: JSON.stringify(data) });
 export const updatePassword = (data, token) => request('/auth/password', { method: 'PUT', headers: withAuth(token), body: JSON.stringify(data) });
 export const deleteAccount = (token) => request('/auth/me', { method: 'DELETE', headers: withAuth(token) });
+
+// ⚠️ POST /api/bookings est documenté dans docs/routesAPI.md mais pas encore
+// implémenté côté backend (bookings.routes.js est vide) : ces appels
+// échoueront tant que le backend n'est pas fait.
+export const createBooking = (data, token) => request('/bookings', { method: 'POST', headers: withAuth(token), body: JSON.stringify(data) });
