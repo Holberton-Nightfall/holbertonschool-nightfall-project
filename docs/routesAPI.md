@@ -55,14 +55,18 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 | Statut | Méthode | URL | Accès | Description |
 |---|---|---|---|---|
 | ✅ | GET | `/api/health` | Public | Vérifier que l'API répond |
-| ⏳ | POST | `/api/auth/register` | Public | Créer un compte |
-| ⏳ | POST | `/api/auth/login` | Public | Se connecter |
-| ⏳ | GET | `/api/auth/me` | Connecté | Profil de l'utilisateur courant |
-| ⏳ | GET | `/api/categories` | Public | Liste des catégories |
-| ⏳ | GET | `/api/experiences` | Public | Catalogue, recherche et filtres |
-| ⏳ | GET | `/api/experiences/:id` | Public | Fiche détaillée |
-| ⏳ | POST | `/api/bookings` | Connecté | Réserver une expérience |
-| ⏳ | GET | `/api/bookings` | Connecté | Mes réservations |
+| ✅ | POST | `/api/auth/register` | Public | Créer un compte |
+| ✅ | POST | `/api/auth/login` | Public | Se connecter |
+| ✅ | GET | `/api/auth/me` | Connecté | Profil de l'utilisateur courant |
+| ✅ | PUT | `/api/auth/me` | Connecté | Modifier prénom/nom |
+| ✅ | PUT | `/api/auth/email` | Connecté | Modifier l'email |
+| ✅ | PUT | `/api/auth/password` | Connecté | Modifier le mot de passe |
+| ✅ | DELETE | `/api/auth/me` | Connecté | Supprimer le compte (soft delete) |
+| ✅ | GET | `/api/categories` | Public | Liste des catégories |
+| ✅ | GET | `/api/experiences` | Public | Catalogue, recherche et filtres |
+| ✅ | GET | `/api/experiences/:id` | Public | Fiche détaillée |
+| ✅ | POST | `/api/bookings` | Connecté | Réserver une expérience |
+| ✅ | GET | `/api/bookings` | Connecté | Mes réservations |
 | ⏳ | GET | `/api/bookings/:id` | Propriétaire | Détail d'une réservation |
 | ⏳ | DELETE | `/api/bookings/:id` | Propriétaire | Annuler (règle des 48 h) |
 | ⏳ | GET | `/api/admin/experiences` | Admin | Toutes les expériences (archivées incluses) |
@@ -149,6 +153,86 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 **Erreurs** : 401
 
 > La déconnexion se fait côté front en supprimant le token. Aucune route n'est nécessaire.
+
+### `PUT /api/auth/me` ⏳
+
+**Accès** : connecté
+
+**Body**
+
+\`\`\`json
+{ "first_name": "Alice", "last_name": "Dupont" }
+\`\`\`
+
+**Règles** : mêmes contraintes que `register` sur `first_name`/`last_name`.
+
+**Réponse 200** : même structure que `GET /api/auth/me`.
+
+**Erreurs** : 400, 401
+
+### `PUT /api/auth/email` ⏳
+
+**Accès** : connecté
+
+**Body**
+
+\`\`\`json
+{ "new_email": "alice2@example.com", "new_email_confirmation": "alice2@example.com" }
+\`\`\`
+
+**Règles**
+
+- `new_email` doit être valide et différent de l'email actuel.
+- `new_email_confirmation` doit être identique à `new_email`.
+
+**Réponse 200** : même structure que `GET /api/auth/me`.
+
+**Erreurs** : 400, 401, 409 (email déjà utilisé)
+
+### `PUT /api/auth/password` ⏳
+
+**Accès** : connecté
+
+**Body**
+
+\`\`\`json
+{
+  "current_password": "motdepasse123",
+  "new_password": "nouveaumdp456",
+  "new_password_confirmation": "nouveaumdp456"
+}
+\`\`\`
+
+**Règles**
+
+- `current_password` doit correspondre au mot de passe actuel.
+- `new_password` suit les mêmes règles que `register` (8 caractères minimum, 72 octets maximum).
+- `new_password_confirmation` doit être identique à `new_password`.
+
+**Réponse 200**
+
+\`\`\`json
+{ "message": "Mot de passe modifié" }
+\`\`\`
+
+**Erreurs** : 400, 401 (mot de passe actuel incorrect ou non connecté)
+
+### `DELETE /api/auth/me` ⏳
+
+**Accès** : connecté
+
+Suppression en **soft delete** : la ligne `users` est conservée (`deleted_at` renseigné), afin de ne pas casser l'historique des réservations liées.
+
+**Réponse 200**
+
+\`\`\`json
+{ "message": "Compte supprimé" }
+\`\`\`
+
+**Erreurs** : 401
+
+> Après suppression, le token devient invalide au prochain appel (`requireAuth` vérifie `deleted_at IS NULL`).
+
 
 ---
 

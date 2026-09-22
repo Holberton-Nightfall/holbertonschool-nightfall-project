@@ -13,7 +13,8 @@ CREATE TABLE users (
     -- 'member' par défaut : le rôle admin n'est jamais attribué par l'inscription
     role           VARCHAR(20)  NOT NULL DEFAULT 'member'
                    CHECK (role IN ('member', 'admin')),
-    created_at     TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+    created_at     TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    deleted_at     TIMESTAMPTZ
 );
 
 CREATE TABLE categories (
