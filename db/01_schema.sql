@@ -7,6 +7,7 @@ CREATE TABLE users (
     id             SERIAL PRIMARY KEY,
     first_name     VARCHAR(100) NOT NULL,
     last_name      VARCHAR(100) NOT NULL,
+    -- Unicité gérée par l'index idx_users_email_lower (insensible à la casse)
     email          VARCHAR(255) NOT NULL UNIQUE,
     password_hash  VARCHAR(255) NOT NULL,
     -- 'member' par défaut : le rôle admin n'est jamais attribué par l'inscription
@@ -47,7 +48,10 @@ CREATE TABLE bookings (
     status         VARCHAR(20) NOT NULL DEFAULT 'confirmed'
                    CHECK (status IN ('confirmed', 'cancelled')),
     created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    cancelled_at   TIMESTAMPTZ
+    cancelled_at   TIMESTAMPTZ,
+    -- Statut et date d'annulation toujours cohérents
+    CONSTRAINT chk_bookings_cancelled
+        CHECK ((status = 'cancelled') = (cancelled_at IS NOT NULL))
 );
 
 -- Règles vérifiées côté Back-end (pas en base, car dépendantes du moment ou d'une autre table) :
@@ -55,6 +59,8 @@ CREATE TABLE bookings (
 --   * participants <= experiences.max_participants
 --   * annulation uniquement à plus de 48 h de scheduled_at
 
+-- Alice@x.com et alice@x.com sont le même compte
+CREATE UNIQUE INDEX idx_users_email_lower ON users (lower(email));
 CREATE INDEX idx_experiences_category ON experiences(category_id);
 CREATE INDEX idx_bookings_user        ON bookings(user_id);
 CREATE INDEX idx_bookings_experience  ON bookings(experience_id);
