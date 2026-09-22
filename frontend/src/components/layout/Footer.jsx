@@ -1,9 +1,10 @@
-import './Footer.css';
+import { container } from '../../lib/classNames.js';
 
 export default function Footer() {
   return (
-    <footer className="footer">
-      <div className="container">© {new Date().getFullYear()} Nightfall Project</div>
+    <footer className="relative border-t border-border-accent py-6 text-center text-sm text-text-muted">
+      <div className="danger-stripe absolute -top-px inset-x-0 h-1 opacity-60" aria-hidden="true" />
+      <div className={container}>© {new Date().getFullYear()} Nightfall Project</div>
     </footer>
   );
 }
