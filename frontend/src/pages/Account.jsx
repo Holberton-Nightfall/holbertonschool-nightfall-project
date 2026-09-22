@@ -6,7 +6,7 @@ import PasswordRequirements from '../components/ui/PasswordRequirements.jsx';
 import Modal from '../components/ui/Modal.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { inputField } from '../lib/classNames.js';
-import { PASSWORD_RULES } from '../lib/passwordRules.js';
+import { isPasswordValid } from '../lib/passwordRules.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -140,7 +140,7 @@ function PasswordSection() {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
 
-  const passwordValid = PASSWORD_RULES.every((rule) => rule.test(newPassword));
+  const passwordValid = isPasswordValid(newPassword);
   const passwordsMatch = confirmPassword.length === 0 || newPassword === confirmPassword;
   const canSubmit = currentPassword.length > 0 && passwordValid && newPassword === confirmPassword;
 
