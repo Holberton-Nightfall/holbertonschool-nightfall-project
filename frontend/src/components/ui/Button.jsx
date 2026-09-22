@@ -9,13 +9,14 @@ const VARIANTS = {
 
 const DISABLED = 'opacity-40 grayscale cursor-not-allowed pointer-events-none hover:translate-y-0';
 
-// `to` rend le bouton comme un <Link> (navigation) au lieu d'un <button> (action).
-export default function Button({ variant = 'primary', className = '', to, disabled = false, ...props }) {
+// `to` rend le bouton comme un <Link> (navigation interne), `href` comme un <a>
+// (ancre de la page, lien externe) ; sans les deux, comme un <button> (action).
+export default function Button({ variant = 'primary', className = '', to, href, disabled = false, ...props }) {
   const classes = `${BASE} ${VARIANTS[variant]} ${disabled ? DISABLED : ''} ${className}`;
-  if (to) {
-    return disabled
-      ? <span className={classes} aria-disabled="true">{props.children}</span>
-      : <Link to={to} className={classes} {...props} />;
+  if (disabled && (to || href)) {
+    return <span className={classes} aria-disabled="true">{props.children}</span>;
   }
+  if (href) return <a href={href} className={classes} {...props} />;
+  if (to) return <Link to={to} className={classes} {...props} />;
   return <button className={classes} disabled={disabled} {...props} />;
 }
