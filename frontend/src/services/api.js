@@ -32,9 +32,9 @@ export const updateEmail = (data, token) => request('/auth/email', { method: 'PU
 export const updatePassword = (data, token) => request('/auth/password', { method: 'PUT', headers: withAuth(token), body: JSON.stringify(data) });
 export const deleteAccount = (token) => request('/auth/me', { method: 'DELETE', headers: withAuth(token) });
 
-// ⚠️ POST/GET/DELETE /api/bookings sont documentés dans docs/routesAPI.md mais
-// pas encore implémentés côté backend (bookings.routes.js est vide) : ces
-// appels échoueront tant que le backend n'est pas fait.
 export const createBooking = (data, token) => request('/bookings', { method: 'POST', headers: withAuth(token), body: JSON.stringify(data) });
 export const getBookings = (token) => request('/bookings', { headers: withAuth(token) });
+
+// ⚠️ DELETE /api/bookings/:id documenté dans docs/routesAPI.md mais pas encore
+// implémenté côté backend : cet appel échouera tant que le backend n'est pas fait.
 export const cancelBooking = (id, token) => request(`/bookings/${id}`, { method: 'DELETE', headers: withAuth(token) });
