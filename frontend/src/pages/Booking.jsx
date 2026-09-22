@@ -6,6 +6,9 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { generateNightSlots, formatNightLabel, formatTime, formatDateTime } from '../lib/slots.js';
 import { inputField } from '../lib/classNames.js';
 
+// Formulaire de réservation en 2 étapes (choix du créneau puis récapitulatif),
+// pour la fiche d'expérience `id`. Les créneaux sont générés côté client
+// (voir lib/slots.js), aucune table sessions en base pour le MVP.
 export default function Booking() {
   const { id } = useParams();
   const navigate = useNavigate();
