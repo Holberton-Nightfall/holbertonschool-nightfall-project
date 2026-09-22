@@ -13,7 +13,8 @@ CREATE TABLE users (
     -- 'member' par défaut : le rôle admin n'est jamais attribué par l'inscription
     role           VARCHAR(20)  NOT NULL DEFAULT 'member'
                    CHECK (role IN ('member', 'admin')),
-    created_at     TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+    created_at     TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    deleted_at     TIMESTAMPTZ
 );
 
 CREATE TABLE categories (
@@ -34,7 +35,7 @@ CREATE TABLE experiences (
     price             NUMERIC(8,2) NOT NULL CHECK (price >= 0),
     -- Archivage plutôt que suppression : l'historique des réservations reste valide
     is_archived       BOOLEAN      NOT NULL DEFAULT FALSE,
-    created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+    created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 );
 
 CREATE TABLE bookings (

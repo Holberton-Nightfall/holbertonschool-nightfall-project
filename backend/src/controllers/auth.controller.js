@@ -98,7 +98,7 @@ export async function login(req, res, next) {
     }
 
     const { rows } = await pool.query(
-      'SELECT id, first_name, last_name, email, role, password_hash FROM users WHERE lower(email) = $1',
+      'SELECT id, first_name, last_name, email, role, password_hash FROM users WHERE lower(email) = $1 AND deleted_at IS NULL',
       [normalizeEmail(email)]
     );
     const user = rows[0];
@@ -121,4 +121,125 @@ export async function login(req, res, next) {
 // requireAuth a déjà chargé l'utilisateur dans req.user
 export function me(req, res) {
   res.json(req.user);
+}
+
+export async function updateProfile(req, res, next) {
+  try {
+    const { first_name, last_name } = req.body ?? {};
+    const errors = [];
+
+    const cleanFirstName = typeof first_name === 'string' ? first_name.trim() : '';
+    if (cleanFirstName.length === 0 || cleanFirstName.length > 100) {
+      errors.push('first_name est obligatoire (100 caractères maximum)');
+    }
+
+    const cleanLastName = typeof last_name === 'string' ? last_name.trim() : '';
+    if (cleanLastName.length === 0 || cleanLastName.length > 100) {
+      errors.push('last_name est obligatoire (100 caractères maximum)');
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({ error: 'Données invalides', details: errors });
+    }
+
+    const { rows } = await pool.query(
+      `UPDATE users SET first_name = $1, last_name = $2
+       WHERE id = $3
+       RETURNING id, first_name, last_name, email, role`,
+      [cleanFirstName, cleanLastName, req.user.id]
+    );
+
+    res.json(publicUser(rows[0]));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateEmail(req, res, next) {
+  try {
+    const { new_email, new_email_confirmation } = req.body ?? {};
+    const errors = [];
+
+    const cleanEmail = typeof new_email === 'string' ? new_email.trim() : '';
+    if (cleanEmail.length === 0 || cleanEmail.length > 255 || !EMAIL_REGEX.test(cleanEmail)) {
+      errors.push('new_email invalide');
+    }
+    if (new_email !== new_email_confirmation) {
+      errors.push('new_email_confirmation ne correspond pas à new_email');
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({ error: 'Données invalides', details: errors });
+    }
+
+    const normalized = normalizeEmail(cleanEmail);
+    if (normalized === req.user.email.toLowerCase()) {
+      return res
+        .status(400)
+        .json({ error: 'Données invalides', details: ['new_email doit différer de l\'email actuel'] });
+    }
+
+    const { rows } = await pool.query(
+      `UPDATE users SET email = $1
+       WHERE id = $2
+       RETURNING id, first_name, last_name, email, role`,
+      [normalized, req.user.id]
+    );
+
+    res.json(publicUser(rows[0]));
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'Email déjà utilisé' });
+    }
+    next(err);
+  }
+}
+
+export async function updatePassword(req, res, next) {
+  try {
+    const { current_password, new_password, new_password_confirmation } = req.body ?? {};
+    const errors = [];
+
+    if (typeof current_password !== 'string' || !current_password) {
+      errors.push('current_password est obligatoire');
+    }
+    if (typeof new_password !== 'string' || new_password.length < 8) {
+      errors.push('new_password doit contenir au moins 8 caractères');
+    } else if (Buffer.byteLength(new_password) > 72) {
+      errors.push('new_password ne doit pas dépasser 72 octets');
+    }
+    if (new_password !== new_password_confirmation) {
+      errors.push('new_password_confirmation ne correspond pas à new_password');
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({ error: 'Données invalides', details: errors });
+    }
+
+    // req.user (issu de requireAuth) n'a pas le hash : on le relit ici
+    const { rows: userRows } = await pool.query(
+      'SELECT password_hash FROM users WHERE id = $1',
+      [req.user.id]
+    );
+    const currentOk = await bcrypt.compare(current_password, userRows[0].password_hash);
+    if (!currentOk) {
+      return res.status(401).json({ error: 'Mot de passe actuel incorrect' });
+    }
+
+    const newHash = await bcrypt.hash(new_password, BCRYPT_ROUNDS);
+    await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, req.user.id]);
+
+    res.json({ message: 'Mot de passe modifié' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteAccount(req, res, next) {
+  try {
+    await pool.query('UPDATE users SET deleted_at = NOW() WHERE id = $1', [req.user.id]);
+    res.json({ message: 'Compte supprimé' });
+  } catch (err) {
+    next(err);
+  }
 }
