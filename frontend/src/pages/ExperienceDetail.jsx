@@ -15,7 +15,7 @@ export default function ExperienceDetail() {
     setStatus('loading');
     getExperienceById(id)
       .then((data) => { setExperience(data); setStatus('ready'); })
-      .catch((err) => setStatus(err.message === 'HTTP 404' ? 'not-found' : 'error'));
+      .catch((err) => setStatus(err.status === 404 ? 'not-found' : 'error'));
   }, [id]);
 
   if (status === 'loading') return <p>Chargement de la fiche…</p>;

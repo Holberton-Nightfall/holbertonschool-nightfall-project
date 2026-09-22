@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { container } from '../../lib/classNames.js';
 
 const navLinkClass = ({ isActive }) =>
@@ -11,9 +12,16 @@ const navLinkClass = ({ isActive }) =>
 
 export default function Header() {
   const { menuOpen, toggleMenu, closeMenu } = useApp();
+  const { isAuthenticated, logout } = useAuth();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => { closeMenu(); }, [pathname]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <header className="sticky top-0 z-10 border-b border-border-accent bg-bg-elevated/90 backdrop-blur-md">
@@ -43,6 +51,16 @@ export default function Header() {
           <NavLink to="/" end className={navLinkClass}>Accueil</NavLink>
           <NavLink to="/catalogue" className={navLinkClass}>Catalogue</NavLink>
           <NavLink to="/about" className={navLinkClass}>À propos</NavLink>
+          {isAuthenticated ? (
+            <>
+              <NavLink to="/compte" className={navLinkClass}>Mon compte</NavLink>
+              <button type="button" onClick={handleLogout} className={navLinkClass({ isActive: false })}>
+                Déconnexion
+              </button>
+            </>
+          ) : (
+            <NavLink to="/connexion" className={navLinkClass}>Connexion</NavLink>
+          )}
         </nav>
       </div>
     </header>
