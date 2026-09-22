@@ -50,8 +50,8 @@ export default function Home() {
             image={`/images/${z.img}.jpeg`}
             badge={<Badge variant={z.level}>{z.tag}</Badge>}
           >
-            <p className="mb-2 text-text-muted">{z.text}</p>
-            <Button variant="ghost">Survivre</Button>
+            <p className="mb-2 line-clamp-3 text-text-muted">{z.text}</p>
+            <Button variant="ghost" className="mt-auto">Survivre</Button>
           </Card>
         ))}
       </div>
