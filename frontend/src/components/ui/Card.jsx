@@ -1,3 +1,6 @@
+// Carte générique (catalogue, accueil) : image désaturée par défaut (charte
+// post-apo), qui redevient nette au survol. `fallback` remplace l'image si
+// l'URL fournie par l'API/le seed est cassée (évite une icône brisée).
 export default function Card({ title, image, fallback, badge, children }) {
   return (
     <article className="group clip-corner flex h-full flex-col border border-border bg-bg-elevated/90 transition-[border-color,transform] duration-300 hover:border-accent/50 hover:-translate-y-1">

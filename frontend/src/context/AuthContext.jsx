@@ -27,6 +27,8 @@ export function AuthProvider({ children }) {
       .catch(() => { setToken(null); localStorage.removeItem(TOKEN_KEY); setUser(null); setStatus('ready'); });
   }, [token]);
 
+  // Seul le JWT est persisté (localStorage) : `user` est retrouvé à chaque
+  // chargement via GET /api/auth/me (effet ci-dessus), jamais stocké tel quel.
   const persistToken = (t) => {
     setToken(t);
     if (t) localStorage.setItem(TOKEN_KEY, t);

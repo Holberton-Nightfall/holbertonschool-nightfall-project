@@ -13,6 +13,8 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // `from` vient de RequireAuth (redirection avec la page d'origine en state) :
+  // permet de revenir sur la page demandée après connexion, /compte par défaut.
   const from = location.state?.from?.pathname || '/compte';
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
   const canSubmit = emailValid && form.password.length > 0;
