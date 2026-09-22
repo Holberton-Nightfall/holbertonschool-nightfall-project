@@ -26,8 +26,12 @@ export async function getExperiences(req, res, next) {
 
     // Filtre par identifiant de catégorie
     if (category) {
+      const categoryId = Number(category);
+      if (!Number.isInteger(categoryId)) {
+        return res.status(400).json({ error: 'category doit être un identifiant valide' });
+      }
       query += ` AND e.category_id = $${paramIndex}`;
-      params.push(Number(category));
+      params.push(categoryId);
       paramIndex++;
     }
 

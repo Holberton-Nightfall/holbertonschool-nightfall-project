@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import { errorHandler } from './middlewares/errorHandler.js';
 import experiencesRoutes from './routes/experiences.routes.js';
 import categoriesRoutes from './routes/categories.routes.js';
+import authRoutes from './routes/auth.routes.js';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/experiences', experiencesRoutes);
+app.use('/api/auth', authRoutes);
 // Route inconnue : 404 en JSON
 app.use((req, res) => {
   res.status(404).json({ error: 'Route introuvable' });

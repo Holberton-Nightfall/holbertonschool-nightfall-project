@@ -6,8 +6,9 @@
 CREATE TABLE users (
     id             SERIAL PRIMARY KEY,
     first_name     VARCHAR(100) NOT NULL,
+    last_name      VARCHAR(100) NOT NULL,
     -- Unicité gérée par l'index idx_users_email_lower (insensible à la casse)
-    email          VARCHAR(255) NOT NULL,
+    email          VARCHAR(255) NOT NULL UNIQUE,
     password_hash  VARCHAR(255) NOT NULL,
     -- 'member' par défaut : le rôle admin n'est jamais attribué par l'inscription
     role           VARCHAR(20)  NOT NULL DEFAULT 'member'
