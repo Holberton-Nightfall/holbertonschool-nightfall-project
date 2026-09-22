@@ -45,13 +45,13 @@ export default function ExperienceDetailTest() {
       <p className="mb-4 font-heading text-sm uppercase tracking-[.05em] text-accent-2">{e.category_name}</p>
       <p className="mb-6 max-w-[65ch] text-text-muted">{e.description}</p>
 
-      <ul className="mb-6 flex flex-wrap gap-6 text-text">
+      <ul className="mb-6 flex flex-wrap gap-x-6 gap-y-2 text-text">
         <li>Durée : {e.duration_min} min</li>
         <li>Participants max : {e.max_participants}</li>
         <li>Prix : {Number(e.price).toFixed(2)} €</li>
       </ul>
 
-      <Button to={`/reservation/${e.id}`}>Réserver</Button>
+      <Button to={`/reservation/${e.id}`} className="w-full sm:w-auto">Réserver</Button>
     </article>
   );
 }
