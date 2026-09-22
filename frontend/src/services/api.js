@@ -10,3 +10,4 @@ export async function request(path, options = {}) {
 }
 
 export const getExperiences = () => request('/experiences');
+export const getExperienceById = (id) => request(`/experiences/${id}`);

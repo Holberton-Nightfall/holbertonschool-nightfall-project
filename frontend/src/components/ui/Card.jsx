@@ -1,6 +1,6 @@
 export default function Card({ title, image, fallback, badge, children }) {
   return (
-    <article className="group clip-corner bg-bg-elevated/90 border border-border transition-[border-color,transform] duration-300 hover:border-accent/50 hover:-translate-y-1">
+    <article className="group clip-corner flex h-full flex-col border border-border bg-bg-elevated/90 transition-[border-color,transform] duration-300 hover:border-accent/50 hover:-translate-y-1">
       {image && (
         <div className="relative aspect-[16/10] overflow-hidden border-b-2 border-accent">
           <img
@@ -13,7 +13,7 @@ export default function Card({ title, image, fallback, badge, children }) {
           {badge && <div className="absolute top-2 left-2 bg-bg/80">{badge}</div>}
         </div>
       )}
-      <div className="flex flex-col items-start gap-2 p-4">
+      <div className="flex flex-1 flex-col items-start gap-2 p-4">
         {title && <h3 className="m-0 text-text">{title}</h3>}
         {children}
       </div>

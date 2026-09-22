@@ -42,6 +42,7 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 | Responsive + charte graphique NIGHTFALL | Tom | `feat/responsive` | ⬜ |
 | Espace admin : gestion des expériences | Benjamin | `feat/admin-experiences` | ⬜ |
 | Espace admin : liste des réservations | Benjamin | `feat/admin-bookings` | ⬜ |
+| Supprimer page test | Tom | `delete/test-page` | ⬜ |
 
 ## Jour 4 - Finalisation (gel des fonctionnalités à midi)
 
