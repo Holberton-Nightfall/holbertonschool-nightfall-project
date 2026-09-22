@@ -259,7 +259,7 @@ function BookingRow({ booking, onCancel }) {
   const past = new Date(booking.scheduled_at) < new Date();
   const cancelled = booking.status === 'cancelled';
   const { label, variant } = bookingStatus(booking);
-  const canCancel = !cancelled && !past && (booking.can_cancel ?? true);
+  const canCancel = !cancelled && !past && (booking.can_cancel ?? false);
 
   return (
     <li className="flex flex-col gap-2 border border-border bg-bg/40 p-4">
@@ -270,13 +270,18 @@ function BookingRow({ booking, onCancel }) {
       <p className="text-sm text-text-muted">
         {formatDateTime(new Date(booking.scheduled_at))} · {booking.participants} participant{booking.participants > 1 ? 's' : ''}
       </p>
-      <p className="text-xs text-text-muted">Réservée le {formatDateTime(new Date(booking.created_at))}</p>
+      {booking.created_at && (
+        <p className="text-xs text-text-muted">Réservée le {formatDateTime(new Date(booking.created_at))}</p>
+      )}
       {cancelled && booking.cancelled_at && (
         <p className="text-xs text-text-muted">Annulée le {formatDateTime(new Date(booking.cancelled_at))}</p>
       )}
       {!cancelled && !past && (
-        <div className="flex gap-3">
-          <Button variant="ghost" onClick={() => onCancel(booking)} disabled={!canCancel}>Annuler</Button>
+        <div className="flex flex-col gap-1">
+          <div className="flex gap-3">
+            <Button variant="ghost" onClick={() => onCancel(booking)} disabled={!canCancel}>Annuler</Button>
+          </div>
+          {!canCancel && <p className="text-xs text-text-muted">Annulation impossible à moins de 48 h</p>}
         </div>
       )}
     </li>
@@ -305,7 +310,9 @@ function BookingsSection() {
   const sorted = [...bookings].sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
   const now = new Date();
   const upcoming = sorted.filter((b) => b.status === 'confirmed' && new Date(b.scheduled_at) >= now);
-  const history = sorted.filter((b) => b.status === 'cancelled' || new Date(b.scheduled_at) < now);
+  const history = sorted
+    .filter((b) => b.status === 'cancelled' || new Date(b.scheduled_at) < now)
+    .reverse();
 
   const openCancel = (booking) => { setCancelError(null); setCancelling(booking); };
 
