@@ -7,7 +7,7 @@ export default function NotFound() {
       <Badge variant="critical" className="animate-blink motion-reduce:animate-none">⚠ Zone hors limites</Badge>
       <h1 className="text-glow-crimson m-0 text-[clamp(4rem,18vw,8rem)]">404</h1>
       <p className="max-w-[40ch] text-text-muted">Signal perdu. Cette zone n'existe pas ou a été purgée.</p>
-      <Button to="/">Retour à l'accueil</Button>
+      <Button to="/" className="w-full sm:w-auto">Retour à l'accueil</Button>
     </section>
   );
 }

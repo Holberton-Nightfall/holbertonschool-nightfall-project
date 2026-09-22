@@ -24,17 +24,17 @@ export default function Home() {
         <div className="relative z-[1] max-w-[720px] px-4 py-10 md:px-6">
           <Badge variant="critical" className="animate-blink motion-reduce:animate-none mb-4">⚠ Zone contaminée</Badge>
           <h1
-            className="glitch mb-4 text-[clamp(3rem,14vw,7rem)] font-black text-text [text-shadow:0_0_12px_rgba(255,13,57,.8),0_0_40px_rgba(255,13,57,.35)]"
+            className="glitch mb-4 text-[clamp(2.5rem,14vw,7rem)] font-black text-text [text-shadow:0_0_12px_rgba(255,13,57,.8),0_0_40px_rgba(255,13,57,.35)]"
             data-text="Nightfall"
           >
             Nightfall
           </h1>
-          <p className="mb-6 max-w-[46ch] text-[1.1rem] text-text [text-shadow:0_2px_6px_#000]">
+          <p className="mb-6 max-w-[46ch] text-base text-text [text-shadow:0_2px_6px_#000] sm:text-[1.1rem]">
             Survivez à la nuit. Le monde d’avant est mort — le parc, lui, vous attend.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Button>Entrer dans la zone</Button>
-            <Button variant="ghost">Signal radio</Button>
+            <Button className="w-full sm:w-auto">Entrer dans la zone</Button>
+            <Button variant="ghost" className="w-full sm:w-auto">Signal radio</Button>
           </div>
         </div>
       </section>

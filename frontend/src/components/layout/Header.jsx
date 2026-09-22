@@ -4,7 +4,8 @@ import { useApp } from '../../context/AppContext.jsx';
 import { container } from '../../lib/classNames.js';
 
 const navLinkClass = ({ isActive }) =>
-  `py-2 font-heading text-[.85rem] uppercase tracking-[.08em] transition-colors duration-300 ${
+  // py-3 en mobile pour une cible tactile confortable, py-2 dès le passage en nav desktop.
+  `block py-3 md:py-2 font-heading text-[.85rem] uppercase tracking-[.08em] transition-colors duration-300 ${
     isActive ? 'text-accent' : 'text-text-muted hover:text-accent-2'
   }`;
 
@@ -25,7 +26,7 @@ export default function Header() {
         </NavLink>
         <button
           type="button"
-          className="flex cursor-pointer flex-col gap-[5px] border-0 bg-transparent p-2 md:hidden"
+          className="flex cursor-pointer flex-col gap-[5px] border-0 bg-transparent p-2.5 md:hidden"
           onClick={toggleMenu}
           aria-expanded={menuOpen}
           aria-controls="header-nav"
