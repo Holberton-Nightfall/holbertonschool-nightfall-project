@@ -26,7 +26,7 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 | `GET /api/bookings` (réservations du membre) | Jason | `feat/api-bookings` | ⬜ |
 | Fiche détaillée d'une expérience | Tom | `feat/experience-detail` | ✅ |
 | Contexte d'auth, formulaires inscription / connexion, routes protégées | Tom | `feat/frontend-auth` | ✅ |
-| Formulaire de réservation + confirmation | Tom | `feat/booking-form` | ⬜ |
+| Formulaire de réservation + confirmation | Tom | `feat/booking-form` | 🟡 |
 | Espace personnel (liste des réservations) | Tom | `feat/member-space` | ⬜ |
 | Seed complet (comptes de démo, expériences, réservations) | Benjamin | `feat/seed` | ⬜ |
 

@@ -59,9 +59,6 @@ export default function ExperienceDetail() {
         <li>Prix : {Number(e.price).toFixed(2)} €</li>
       </ul>
 
-      {/* La page /reservation/:id et l'API POST /api/bookings n'existent pas encore
-          (tâche feat/booking-form à venir) : le bouton est déjà relié à la route prévue,
-          elle mènera pour l'instant sur la 404 — à corriger quand booking-form sera fait. */}
       <Button to={`/reservation/${e.id}`} className="w-full sm:w-auto">Réserver</Button>
     </article>
   );

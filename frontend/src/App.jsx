@@ -8,6 +8,8 @@ import ExperienceDetailTest from './pages/ExperienceDetailTest.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Account from './pages/Account.jsx';
+import Booking from './pages/Booking.jsx';
+import BookingConfirmation from './pages/BookingConfirmation.jsx';
 import About from './pages/About.jsx';
 import Terms from './pages/Terms.jsx';
 import NotFound from './pages/NotFound.jsx';
@@ -25,6 +27,8 @@ export default function App() {
         <Route path="connexion" element={<Login />} />
         <Route path="inscription" element={<Register />} />
         <Route path="compte" element={<RequireAuth><Account /></RequireAuth>} />
+        <Route path="reservation/:id" element={<RequireAuth><Booking /></RequireAuth>} />
+        <Route path="reservation/:id/confirmation" element={<RequireAuth><BookingConfirmation /></RequireAuth>} />
         <Route path="about" element={<About />} />
         <Route path="conditions" element={<Terms />} />
         <Route path="*" element={<NotFound />} />
