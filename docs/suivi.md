@@ -27,7 +27,7 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 | Fiche détaillée d'une expérience | Tom | `feat/experience-detail` | ✅ |
 | Contexte d'auth, formulaires inscription / connexion, routes protégées | Tom | `feat/frontend-auth` | ✅ |
 | Formulaire de réservation + confirmation | Tom | `feat/booking-form` | 🟡 |
-| Espace personnel (liste des réservations) | Tom | `feat/member-space` | ⬜ |
+| Espace personnel (liste des réservations) | Tom | `feat/member-space` | 🟡 |
 | Seed complet (comptes de démo, expériences, réservations) | Benjamin | `feat/seed` | ⬜ |
 
 ## Jour 3 - MVP complet (P2)

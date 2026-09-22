@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button.jsx';
 import PasswordInput from '../components/ui/PasswordInput.jsx';
 import PasswordRequirements from '../components/ui/PasswordRequirements.jsx';
 import Modal from '../components/ui/Modal.jsx';
+import Badge from '../components/ui/Badge.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { inputField } from '../lib/classNames.js';
 import { PASSWORD_RULES } from '../lib/passwordRules.js';
+import { formatDateTime } from '../lib/slots.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -247,6 +249,141 @@ function DangerZoneSection() {
   );
 }
 
+function bookingStatus(booking) {
+  if (booking.status === 'cancelled') return { label: 'Annulée', variant: 'critical' };
+  if (new Date(booking.scheduled_at) < new Date()) return { label: 'Terminée', variant: 'muted' };
+  return { label: 'Confirmée', variant: 'secure' };
+}
+
+function BookingRow({ booking, onCancel }) {
+  const past = new Date(booking.scheduled_at) < new Date();
+  const cancelled = booking.status === 'cancelled';
+  const { label, variant } = bookingStatus(booking);
+  const canCancel = !cancelled && !past && (booking.can_cancel ?? false);
+
+  return (
+    <li className="flex flex-col gap-2 border border-border bg-bg/40 p-4">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-text">{booking.experience_name}</span>
+        <Badge variant={variant}>{label}</Badge>
+      </div>
+      <p className="text-sm text-text-muted">
+        {formatDateTime(new Date(booking.scheduled_at))} · {booking.participants} participant{booking.participants > 1 ? 's' : ''}
+      </p>
+      {booking.created_at && (
+        <p className="text-xs text-text-muted">Réservée le {formatDateTime(new Date(booking.created_at))}</p>
+      )}
+      {cancelled && booking.cancelled_at && (
+        <p className="text-xs text-text-muted">Annulée le {formatDateTime(new Date(booking.cancelled_at))}</p>
+      )}
+      {!cancelled && !past && (
+        <div className="flex flex-col gap-1">
+          <div className="flex gap-3">
+            <Button variant="ghost" onClick={() => onCancel(booking)} disabled={!canCancel}>Annuler</Button>
+          </div>
+          {!canCancel && <p className="text-xs text-text-muted">Annulation impossible à moins de 48 h</p>}
+        </div>
+      )}
+    </li>
+  );
+}
+
+// Le statut "Terminée" n'existe pas en base (contrainte confirmed/cancelled
+// uniquement) : il est calculé ici à l'affichage quand scheduled_at est passé.
+function BookingsSection() {
+  const { getBookings, cancelBooking } = useAuth();
+  const [bookings, setBookings] = useState([]);
+  const [loadStatus, setLoadStatus] = useState('loading'); // loading | ready | error
+  const [loadError, setLoadError] = useState(null);
+  const [cancelling, setCancelling] = useState(null);
+  const [cancelError, setCancelError] = useState(null);
+  // Volet historique (réservations terminées/annulées) : toujours fermé à
+  // l'arrivée sur la page, pas de mémorisation (localStorage ou autre).
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  useEffect(() => {
+    getBookings()
+      .then((data) => { setBookings(data); setLoadStatus('ready'); })
+      .catch((err) => { setLoadError(err.message || 'Impossible de charger les réservations'); setLoadStatus('error'); });
+  }, []);
+
+  const sorted = [...bookings].sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
+  const now = new Date();
+  const upcoming = sorted.filter((b) => b.status === 'confirmed' && new Date(b.scheduled_at) >= now);
+  const history = sorted
+    .filter((b) => b.status === 'cancelled' || new Date(b.scheduled_at) < now)
+    .reverse();
+
+  const openCancel = (booking) => { setCancelError(null); setCancelling(booking); };
+
+  const handleCancel = async (booking) => {
+    setCancelError(null);
+    try {
+      await cancelBooking(booking.id);
+      setBookings((prev) => prev.map((b) => (
+        b.id === booking.id ? { ...b, status: 'cancelled', cancelled_at: new Date().toISOString() } : b
+      )));
+      setCancelling(null);
+    } catch (err) {
+      setCancelError(err.message || "Impossible d'annuler cette réservation");
+    }
+  };
+
+  return (
+    <section className={sectionClass}>
+      <h2 className="text-glow-crimson mb-4 text-lg text-accent">Mes réservations</h2>
+
+      {loadStatus === 'loading' && <p className="text-text-muted">Chargement…</p>}
+      {loadStatus === 'error' && <p role="alert" className="text-accent">{loadError}</p>}
+
+      {loadStatus === 'ready' && (
+        <>
+          {upcoming.length === 0 ? (
+            <p className="text-text-muted">Aucune réservation à venir.</p>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {upcoming.map((b) => (
+                <BookingRow key={b.id} booking={b} onCancel={openCancel} />
+              ))}
+            </ul>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setHistoryOpen((v) => !v)}
+            aria-expanded={historyOpen}
+            className="mt-4 flex w-full items-center justify-between text-sm text-text-muted hover:text-accent-2"
+          >
+            Historique ({history.length})
+            <span aria-hidden="true">{historyOpen ? '▲' : '▼'}</span>
+          </button>
+          {historyOpen && (
+            history.length === 0 ? (
+              <p className="mt-2 text-text-muted">Aucun événement passé.</p>
+            ) : (
+              <ul className="mt-2 flex flex-col gap-3">
+                {history.map((b) => <BookingRow key={b.id} booking={b} />)}
+              </ul>
+            )
+          )}
+        </>
+      )}
+
+      <Modal open={Boolean(cancelling)} onClose={() => setCancelling(null)} title="Annuler la réservation ?">
+        {cancelling && (
+          <>
+            <p className="mb-4 text-text-muted">
+              Cette action annule votre réservation pour <span className="text-text">{cancelling.experience_name}</span>.
+            </p>
+            {cancelError && <p role="alert" className="mb-4 text-accent">{cancelError}</p>}
+            <Button onClick={() => handleCancel(cancelling)}>Oui, annuler</Button>
+          </>
+        )}
+      </Modal>
+    </section>
+  );
+}
+
 // Première route protégée par RequireAuth, sert aussi de vérification bout en
 // bout au contexte d'auth. Le bouton de déconnexion est dans le header.
 //
@@ -270,6 +407,7 @@ export default function Account() {
       <ProfileSection user={user} />
       <EmailSection user={user} />
       <PasswordSection />
+      <BookingsSection />
       <Button variant="ghost" onClick={handleLogout} className="w-full sm:w-auto">Se déconnecter</Button>
       <DangerZoneSection />
     </div>
