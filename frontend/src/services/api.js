@@ -32,7 +32,14 @@ export const updateEmail = (data, token) => request('/auth/email', { method: 'PU
 export const updatePassword = (data, token) => request('/auth/password', { method: 'PUT', headers: withAuth(token), body: JSON.stringify(data) });
 export const deleteAccount = (token) => request('/auth/me', { method: 'DELETE', headers: withAuth(token) });
 
-// ⚠️ POST /api/bookings est documenté dans docs/routesAPI.md mais pas encore
-// implémenté côté backend (bookings.routes.js est vide) : ces appels
-// échoueront tant que le backend n'est pas fait.
+// ⚠️ POST/GET/DELETE /api/bookings sont documentés dans docs/routesAPI.md mais
+// pas encore implémentés côté backend (bookings.routes.js est vide) : ces
+// appels échoueront tant que le backend n'est pas fait.
 export const createBooking = (data, token) => request('/bookings', { method: 'POST', headers: withAuth(token), body: JSON.stringify(data) });
+export const getBookings = (token) => request('/bookings', { headers: withAuth(token) });
+export const cancelBooking = (id, token) => request(`/bookings/${id}`, { method: 'DELETE', headers: withAuth(token) });
+
+// ⚠️ PATCH /api/bookings/:id n'existe pas encore dans docs/routesAPI.md ni côté
+// backend : contrat proposé (scheduled_at / participants optionnels) à valider
+// avec Jason avant implémentation.
+export const updateBooking = (id, data, token) => request(`/bookings/${id}`, { method: 'PATCH', headers: withAuth(token), body: JSON.stringify(data) });
