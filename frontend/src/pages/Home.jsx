@@ -28,48 +28,37 @@ const FAQ = [
 export default function Home() {
   return (
     <>
-      <section className="relative -mx-4 flex min-h-[70vh] items-end overflow-hidden border-b border-border-accent md:-mx-6">
-        <img
-          className="absolute inset-0 h-full w-full object-cover [filter:grayscale(.5)_contrast(1.15)_brightness(.55)_sepia(.25)]"
-          src="/images/nightfall.jpeg"
-          alt=""
-        />
-        <div className="absolute inset-0 [background:linear-gradient(to_top,var(--color-bg)_0%,rgba(8,14,20,.55)_45%,rgba(8,14,20,.2)_100%),radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,.8)_100%)]" />
-        <div className="relative z-[1] max-w-[720px] px-4 py-10 md:px-6">
-          <Badge variant="critical" className="animate-blink motion-reduce:animate-none mb-4">⚠ Zone contaminée</Badge>
-          <h1
-            className="glitch mb-4 text-[clamp(2.5rem,14vw,7rem)] font-black text-text [text-shadow:0_0_12px_rgba(255,13,57,.8),0_0_40px_rgba(255,13,57,.35)]"
-            data-text="Nightfall"
-          >
-            Nightfall
-          </h1>
-          <p className="mb-4 max-w-[46ch] text-base text-text [text-shadow:0_2px_6px_#000] sm:text-[1.1rem]">
-            Survivez à la nuit. Le monde d’avant est mort — le parc, lui, vous attend.
-          </p>
-          <p className="mb-6 inline-block border border-accent-2 bg-bg/70 px-3 py-1.5 font-heading text-sm uppercase tracking-[.08em] text-accent-2">
-            Ouvert de 22h à 06h uniquement
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Button to="/catalogue" className="w-full sm:w-auto">Réserver ma nuit</Button>
-            <Button href="#concept" variant="ghost" className="w-full sm:w-auto">En savoir plus</Button>
+      <div className="clip-corner relative -mx-4 mb-10 bg-accent p-[3px] md:-mx-6">
+        <section className="clip-corner relative flex min-h-[70vh] items-end overflow-hidden">
+          <img
+            className="absolute inset-0 h-full w-full object-cover [filter:grayscale(.5)_contrast(1.15)_brightness(.55)_sepia(.25)]"
+            src="/images/nightfall.jpeg"
+            alt=""
+          />
+          <div className="absolute inset-0 [background:linear-gradient(to_top,var(--color-bg)_0%,rgba(8,14,20,.55)_45%,rgba(8,14,20,.2)_100%),radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,.8)_100%)]" />
+          <div className="relative z-[1] max-w-[1100px] px-4 py-10 md:px-6">
+            <Badge variant="critical" className="animate-blink motion-reduce:animate-none mb-4">⚠ Zone contaminée</Badge>
+            <h1
+              className="glitch mb-4 text-[clamp(2.5rem,14vw,7rem)] font-black text-text [text-shadow:0_0_12px_rgba(255,13,57,.8),0_0_40px_rgba(255,13,57,.35)]"
+              data-text="Nightfall"
+            >
+              Nightfall
+            </h1>
+            <p className="mb-4 max-w-[65ch] font-heading text-sm font-black uppercase tracking-[.03em] text-text [text-shadow:0_0_10px_rgba(255,13,57,.8),0_0_28px_rgba(255,13,57,.4)] sm:text-base md:max-w-none md:whitespace-nowrap md:text-2xl">
+              Pas de spectateurs : vous êtes acteur de votre propre survie.
+            </p>
+            <p className="mb-4 max-w-[46ch] text-base text-text [text-shadow:0_2px_6px_#000] sm:max-w-[65ch] sm:text-[1.1rem]">
+              Survivez à la nuit. Le monde d’avant est mort — le parc, lui, vous attend.
+            </p>
+            <p className="mb-6 inline-block border border-accent-2 bg-bg/70 px-3 py-1.5 font-heading text-sm uppercase tracking-[.08em] text-accent-2">
+              Ouvert de 22h à 06h uniquement
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Button to="/catalogue" className="w-full sm:w-auto">Réserver ma nuit</Button>
+            </div>
           </div>
-        </div>
-      </section>
-
-      <div className="danger-stripe -mx-4 mb-10 h-2.5 opacity-70 md:-mx-6" />
-
-      {/* Concept */}
-      <section id="concept" className="relative -mx-4 mb-16 scroll-mt-20 overflow-hidden border-y border-border-accent md:-mx-6">
-        <img
-          className="absolute inset-0 h-full w-full object-cover [filter:grayscale(.7)_contrast(1.2)_brightness(.35)_sepia(.15)]"
-          src="/images/slaughterhouse.jpeg"
-          alt=""
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg/50 via-bg/75 to-bg" />
-        <p className="text-glow-crimson relative z-[1] mx-auto max-w-[65ch] px-4 py-14 text-center text-base font-bold uppercase leading-snug text-text sm:whitespace-nowrap sm:py-20 sm:text-[clamp(.75rem,1.8vw,1.75rem)] md:px-6 md:py-24">
-          Pas de spectateurs : vous êtes acteur de votre propre survie.
-        </p>
-      </section>
+        </section>
+      </div>
 
       {/* Pourquoi venir */}
       <section className="mb-16">
