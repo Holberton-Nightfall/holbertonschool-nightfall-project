@@ -35,7 +35,7 @@ CREATE TABLE experiences (
     price             NUMERIC(8,2) NOT NULL CHECK (price >= 0),
     -- Archivage plutôt que suppression : l'historique des réservations reste valide
     is_archived       BOOLEAN      NOT NULL DEFAULT FALSE,
-    created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE bookings (
