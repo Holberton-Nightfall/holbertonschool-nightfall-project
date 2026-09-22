@@ -38,8 +38,3 @@ export const deleteAccount = (token) => request('/auth/me', { method: 'DELETE', 
 export const createBooking = (data, token) => request('/bookings', { method: 'POST', headers: withAuth(token), body: JSON.stringify(data) });
 export const getBookings = (token) => request('/bookings', { headers: withAuth(token) });
 export const cancelBooking = (id, token) => request(`/bookings/${id}`, { method: 'DELETE', headers: withAuth(token) });
-
-// ⚠️ PATCH /api/bookings/:id n'existe pas encore dans docs/routesAPI.md ni côté
-// backend : contrat proposé (scheduled_at / participants optionnels) à valider
-// avec Jason avant implémentation.
-export const updateBooking = (id, data, token) => request(`/bookings/${id}`, { method: 'PATCH', headers: withAuth(token), body: JSON.stringify(data) });

@@ -255,7 +255,7 @@ function bookingStatus(booking) {
   return { label: 'Confirmée', variant: 'secure' };
 }
 
-function BookingRow({ booking, onEdit, onCancel }) {
+function BookingRow({ booking, onCancel }) {
   const past = new Date(booking.scheduled_at) < new Date();
   const cancelled = booking.status === 'cancelled';
   const { label, variant } = bookingStatus(booking);
@@ -276,7 +276,6 @@ function BookingRow({ booking, onEdit, onCancel }) {
       )}
       {!cancelled && !past && (
         <div className="flex gap-3">
-          <Button variant="ghost" onClick={() => onEdit(booking)}>Modifier</Button>
           <Button variant="ghost" onClick={() => onCancel(booking)} disabled={!canCancel}>Annuler</Button>
         </div>
       )}
@@ -284,72 +283,13 @@ function BookingRow({ booking, onEdit, onCancel }) {
   );
 }
 
-const toLocalInputValue = (date) => {
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-};
-
-function EditBookingForm({ booking, onSubmit }) {
-  const [scheduledAt, setScheduledAt] = useState(toLocalInputValue(new Date(booking.scheduled_at)));
-  const [participants, setParticipants] = useState(booking.participants);
-  const [status, setStatus] = useState('idle');
-  const [error, setError] = useState(null);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setStatus('saving');
-    try {
-      await onSubmit({ scheduled_at: new Date(scheduledAt).toISOString(), participants: Number(participants) });
-    } catch (err) {
-      setError(err.message || 'Impossible de modifier cette réservation');
-      setStatus('idle');
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm text-text-muted">
-        Créneau
-        <input
-          type="datetime-local"
-          value={scheduledAt}
-          onChange={(e) => setScheduledAt(e.target.value)}
-          required
-          className={inputField}
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm text-text-muted">
-        Participants
-        <input
-          type="number"
-          min={1}
-          value={participants}
-          onChange={(e) => setParticipants(e.target.value)}
-          required
-          className={inputField}
-        />
-      </label>
-      {error && <p role="alert" className="text-accent">{error}</p>}
-      <Button type="submit" disabled={status === 'saving'} className="w-full sm:w-auto">
-        {status === 'saving' ? 'Enregistrement…' : 'Enregistrer'}
-      </Button>
-    </form>
-  );
-}
-
-// ⚠️ Consomme GET/PATCH/DELETE /api/bookings : documentés (PATCH proposé,
-// à valider) dans docs/routesAPI.md mais pas implémentés côté backend
-// (bookings.routes.js vide). Échouera tant que le backend n'est pas fait.
-//
 // Le statut "Terminée" n'existe pas en base (contrainte confirmed/cancelled
 // uniquement) : il est calculé ici à l'affichage quand scheduled_at est passé.
 function BookingsSection() {
-  const { getBookings, updateBooking, cancelBooking } = useAuth();
+  const { getBookings, cancelBooking } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loadStatus, setLoadStatus] = useState('loading'); // loading | ready | error
   const [loadError, setLoadError] = useState(null);
-  const [editing, setEditing] = useState(null);
   const [cancelling, setCancelling] = useState(null);
   const [cancelError, setCancelError] = useState(null);
   // Volet historique (réservations terminées/annulées) : toujours fermé à
@@ -382,12 +322,6 @@ function BookingsSection() {
     }
   };
 
-  const handleSaveEdit = async (data) => {
-    const updated = await updateBooking(editing.id, data);
-    setBookings((prev) => prev.map((b) => (b.id === editing.id ? { ...b, ...updated } : b)));
-    setEditing(null);
-  };
-
   return (
     <section className={sectionClass}>
       <h2 className="text-glow-crimson mb-4 text-lg text-accent">Mes réservations</h2>
@@ -402,7 +336,7 @@ function BookingsSection() {
           ) : (
             <ul className="flex flex-col gap-3">
               {upcoming.map((b) => (
-                <BookingRow key={b.id} booking={b} onEdit={setEditing} onCancel={openCancel} />
+                <BookingRow key={b.id} booking={b} onCancel={openCancel} />
               ))}
             </ul>
           )}
@@ -427,10 +361,6 @@ function BookingsSection() {
           )}
         </>
       )}
-
-      <Modal open={Boolean(editing)} onClose={() => setEditing(null)} title="Modifier la réservation">
-        {editing && <EditBookingForm booking={editing} onSubmit={handleSaveEdit} />}
-      </Modal>
 
       <Modal open={Boolean(cancelling)} onClose={() => setCancelling(null)} title="Annuler la réservation ?">
         {cancelling && (
