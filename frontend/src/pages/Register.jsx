@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button.jsx';
 import PasswordInput from '../components/ui/PasswordInput.jsx';
+import PasswordRequirements from '../components/ui/PasswordRequirements.jsx';
 import Modal from '../components/ui/Modal.jsx';
 import TermsContent from '../content/TermsContent.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -85,9 +86,7 @@ export default function Register() {
             value={form.password}
             onChange={handleChange}
           />
-          <span className={form.password.length > 0 && !passwordValid ? 'text-accent' : 'text-xs text-text-muted'}>
-            8 caractères minimum, une majuscule et un caractère spécial.
-          </span>
+          <PasswordRequirements password={form.password} />
         </label>
         <label className="flex flex-col gap-1 text-sm text-text-muted">
           Confirmer le mot de passe
