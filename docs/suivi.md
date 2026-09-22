@@ -13,7 +13,7 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 | Initialisation Express + `GET /api/health` | Jason | `feat/backend-init` | ✅ |
 | `GET /api/experiences` et `GET /api/experiences/:id` | Jason | `feat/api-experiences` | ✅ |
 | Initialisation Vite + React Router + layout | Tom | `feat/frontend-init` | ✅ |
-| Page catalogue branchée sur l'API | Tom | `feat/catalogue` | ⬜ |
+| Page catalogue branchée sur l'API | Tom | `feat/catalogue` | ✅ |
 | README initial | Benjamin | `docs/readme` | ⬜ |
 
 ## Jour 2 - Compte et réservation (P1)
@@ -42,6 +42,7 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 | Responsive + charte graphique NIGHTFALL | Tom | `feat/responsive` | ⬜ |
 | Espace admin : gestion des expériences | Benjamin | `feat/admin-experiences` | ⬜ |
 | Espace admin : liste des réservations | Benjamin | `feat/admin-bookings` | ⬜ |
+| Supprimer page test | Tom | `delete/test-page` | ⬜ |
 
 ## Jour 4 - Finalisation (gel des fonctionnalités à midi)
 

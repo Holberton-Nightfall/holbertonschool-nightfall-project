@@ -8,3 +8,6 @@ export async function request(path, options = {}) {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
+
+export const getExperiences = () => request('/experiences');
+export const getExperienceById = (id) => request(`/experiences/${id}`);

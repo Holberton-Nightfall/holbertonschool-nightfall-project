@@ -19,6 +19,7 @@ INSERT INTO users (first_name, last_name, email, password_hash, role) VALUES
     ('Admin',  'Nightfall', 'admin@nightfall.dev',   '$2b$10$7hHUWXnSSB3XXaWAy64sEOlbF5y8F1y3qzojMsS818W4RFxrGnMsG', 'admin'),
     ('Alex',   'Martin',    'membre@nightfall.dev',  '$2b$10$T4PV6UuKJBV8cJjSLexZD.03ECNCbC7DH6i3pg6mzZcGrwoMaOkdy', 'member'),
     ('Sam',    'Durand',    'membre2@nightfall.dev', '$2b$10$It7YjKKAO8JbdoxCI7e3yeSMmEv7hjHq3TmShllHjUCzKEgHqtjdy', 'member');
+
 -- ---------- Expériences ----------
 -- category_id retrouvé par nom : le seed ne dépend pas de l'ordre des id
 INSERT INTO experiences (name, description, image_url, category_id, duration_min, intensity, max_participants, price) VALUES
