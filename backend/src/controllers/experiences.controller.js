@@ -111,6 +111,36 @@ export async function getExperiences(req, res, next) {
   }
 }
 
+export async function searchExperiences(req, res, next) {
+  try {
+    const { q } = req.query;
+
+    // Vérification de la présence du paramètre 'q'
+    if (!q || q.trim() === '') {
+      return res.status(400).json({ error: 'Le paramètre de recherche "q" est obligatoire' });
+    }
+
+    const searchQuery = `%${q.trim()}%`;
+
+    // Recherche insensible à la casse (ILIKE) sur le nom OU la description
+    const { rows } = await pool.query(
+      `SELECT e.id, e.name, e.description, e.image_url, e.duration_min,
+              e.intensity, e.max_participants, e.price,
+              c.id AS category_id, c.name AS category_name
+       FROM experiences e
+       JOIN categories c ON c.id = e.category_id
+       WHERE e.is_archived = false 
+         AND (e.name ILIKE $1 OR e.description ILIKE $1)
+       ORDER BY e.name`,
+      [searchQuery]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getExperienceById(req, res, next) {
   try {
     const id = Number(req.params.id);

@@ -1,9 +1,19 @@
-// backend/src/routes/experiences.routes.js
 import { Router } from 'express';
-import { getExperiences, getExperienceById } from '../controllers/experiences.controller.js';
+import { 
+  getExperiences, 
+  getExperienceById, 
+  searchExperiences 
+} from '../controllers/experiences.controller.js';
+
+// N'oublie pas d'importer le middleware !
+import { requireAuth } from '../middlewares/auth.js'; 
 
 const router = Router();
 
+// 1. La route de recherche (sécurisée)
+router.get('/search', requireAuth, searchExperiences);
+
+// 2. Les autres routes (exemple)
 router.get('/', getExperiences);
 router.get('/:id', getExperienceById);
 
