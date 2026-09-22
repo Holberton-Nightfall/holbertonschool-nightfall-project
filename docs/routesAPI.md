@@ -68,6 +68,7 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 | ✅ | POST | `/api/bookings` | Connecté | Réserver une expérience |
 | ✅ | GET | `/api/bookings` | Connecté | Mes réservations |
 | ⏳ | GET | `/api/bookings/:id` | Propriétaire | Détail d'une réservation |
+| ⏳ | PATCH | `/api/bookings/:id` | Propriétaire | Modifier une réservation (créneau, participants) |
 | ⏳ | DELETE | `/api/bookings/:id` | Propriétaire | Annuler (règle des 48 h) |
 | ⏳ | GET | `/api/admin/experiences` | Admin | Toutes les expériences (archivées incluses) |
 | ⏳ | POST | `/api/experiences` | Admin | Créer une expérience |
@@ -385,6 +386,42 @@ Renvoie uniquement les réservations de l'utilisateur connecté, triées par dat
 | 401 | Non connecté |
 | 403 | La réservation appartient à un autre utilisateur |
 | 404 | Réservation inexistante |
+
+### `PATCH /api/bookings/:id` ⏳
+
+Modifie le créneau et/ou le nombre de participants d'une réservation existante, sans passer par une annulation.
+
+**Body** (champs optionnels, au moins un requis)
+
+```json
+{
+  "scheduled_at": "2026-10-16T22:00:00Z",
+  "participants": 3
+}
+```
+
+**Vérifications côté back-end**
+
+1. La réservation existe (404) et appartient à l'utilisateur connecté (403).
+2. Elle est `confirmed` (409 si déjà `cancelled`).
+3. Mêmes règles que la création : `scheduled_at` dans le futur, `participants` positif et ≤ `max_participants` de l'expérience.
+4. Modification autorisée uniquement à plus de 48 h de l'ancien **et** du nouveau créneau (même règle que l'annulation).
+
+**Réponse 200**
+
+```json
+{
+  "id": 12,
+  "experience_id": 1,
+  "scheduled_at": "2026-10-16T22:00:00.000Z",
+  "participants": 3,
+  "status": "confirmed"
+}
+```
+
+**Erreurs** : 400, 401, 403, 404, 409
+
+> Proposé côté front (page Mon compte) pour permettre de modifier une réservation sans l'annuler. Contrat à valider avant implémentation.
 
 ### `DELETE /api/bookings/:id` ⏳
 
