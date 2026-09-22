@@ -1,6 +1,16 @@
+// backend/src/controllers/bookings.controller.js
 import { pool } from '../config/db.js';
 
 const CANCEL_WINDOW_HOURS = 48;
+
+// Plus grand entier accepté par une colonne PostgreSQL INTEGER
+const MAX_INT = 2147483647;
+
+function parsePositiveInt(value) {
+  if (typeof value !== 'string' || !/^\d+$/.test(value)) return null;
+  const n = Number(value);
+  return n > 0 && n <= MAX_INT ? n : null;
+}
 
 export async function createBooking(req, res, next) {
   try {
@@ -72,6 +82,56 @@ export async function getBookings(req, res, next) {
       [req.user.id]
     );
     res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function cancelBooking(req, res, next) {
+  try {
+    const id = parsePositiveInt(req.params.id);
+    if (id === null) {
+      return res.status(400).json({ error: 'Identifiant invalide' });
+    }
+
+    // Mutation atomique : la fenêtre des 48h est vérifiée dans la même requête
+    // que l'écriture, donc pas de race condition entre lecture et annulation.
+    const { rows } = await pool.query(
+      `UPDATE bookings
+       SET status = 'cancelled', cancelled_at = NOW()
+       WHERE id = $1
+         AND user_id = $2
+         AND status = 'confirmed'
+         AND scheduled_at > NOW() + INTERVAL '${CANCEL_WINDOW_HOURS} hours'
+       RETURNING id, experience_id, scheduled_at, participants, status, cancelled_at`,
+      [id, req.user.id]
+    );
+
+    if (rows.length === 1) {
+      return res.json(rows[0]);
+    }
+
+    // L'UPDATE n'a touché aucune ligne : on interroge sans filtre pour
+    // savoir laquelle des 4 raisons s'applique, et renvoyer le bon code.
+    const { rows: diagRows } = await pool.query(
+      'SELECT user_id, status, scheduled_at FROM bookings WHERE id = $1',
+      [id]
+    );
+
+    if (diagRows.length === 0) {
+      return res.status(404).json({ error: 'Réservation introuvable' });
+    }
+
+    const booking = diagRows[0];
+    if (booking.user_id !== req.user.id) {
+      return res.status(403).json({ error: "Vous n'êtes pas propriétaire de cette réservation" });
+    }
+    if (booking.status !== 'confirmed') {
+      return res.status(400).json({ error: 'Cette réservation est déjà annulée' });
+    }
+    return res.status(400).json({
+      error: `Annulation impossible à moins de ${CANCEL_WINDOW_HOURS}h du créneau`,
+    });
   } catch (err) {
     next(err);
   }
