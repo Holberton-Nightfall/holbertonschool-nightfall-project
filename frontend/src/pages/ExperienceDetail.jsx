@@ -3,8 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import Button from '../components/ui/Button.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import { getExperienceById } from '../services/api.js';
-
-const FALLBACK_IMAGE = '/images/nightfall.jpeg';
+import { FALLBACK_IMAGE } from '../lib/constants.js';
 
 // Fiche publique branchée sur GET /api/experiences/:id.
 export default function ExperienceDetail() {

@@ -7,10 +7,9 @@ import Modal from '../components/ui/Modal.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { inputField } from '../lib/classNames.js';
-import { PASSWORD_RULES } from '../lib/passwordRules.js';
+import { isPasswordValid } from '../lib/passwordRules.js';
 import { formatDateTime } from '../lib/slots.js';
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { EMAIL_RE } from '../lib/constants.js';
 
 const sectionClass = 'clip-corner border border-border bg-bg-elevated/60 p-6';
 
@@ -144,7 +143,7 @@ function PasswordSection() {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
 
-  const passwordValid = PASSWORD_RULES.every((rule) => rule.test(newPassword));
+  const passwordValid = isPasswordValid(newPassword);
   const passwordsMatch = confirmPassword.length === 0 || newPassword === confirmPassword;
   const canSubmit = currentPassword.length > 0 && passwordValid && newPassword === confirmPassword;
 

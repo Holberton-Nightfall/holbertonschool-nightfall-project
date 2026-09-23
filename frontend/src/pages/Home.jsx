@@ -4,8 +4,7 @@ import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import { getExperiences } from '../services/api.js';
-
-const FALLBACK_IMAGE = '/images/nightfall.jpeg';
+import { FALLBACK_IMAGE } from '../lib/constants.js';
 
 function pickRandom(list, count) {
   const shuffled = [...list].sort(() => Math.random() - 0.5);

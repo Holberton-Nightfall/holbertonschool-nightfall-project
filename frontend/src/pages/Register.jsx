@@ -7,7 +7,8 @@ import Modal from '../components/ui/Modal.jsx';
 import TermsContent from '../content/TermsContent.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { inputField } from '../lib/classNames.js';
-import { PASSWORD_RULES } from '../lib/passwordRules.js';
+import { isPasswordValid } from '../lib/passwordRules.js';
+import { EMAIL_RE } from '../lib/constants.js';
 
 export default function Register() {
   const { register, isAuthenticated, status } = useAuth();
@@ -23,9 +24,9 @@ export default function Register() {
 
   const from = location.state?.from?.pathname || '/compte';
 
-  const passwordValid = PASSWORD_RULES.every((rule) => rule.test(form.password));
+  const passwordValid = isPasswordValid(form.password);
   const passwordsMatch = confirmPassword.length === 0 || form.password === confirmPassword;
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+  const emailValid = EMAIL_RE.test(form.email);
   const canSubmit = form.first_name.trim() !== '' && form.last_name.trim() !== '' && emailValid
     && passwordValid && confirmPassword.length > 0 && form.password === confirmPassword && acceptedTerms;
 
