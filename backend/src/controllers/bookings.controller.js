@@ -127,8 +127,11 @@ export async function cancelBooking(req, res, next) {
       return res.status(400).json({ error: 'Identifiant invalide' });
     }
 
-    // Mutation atomique : la fenêtre des 48h est vérifiée dans la même requête
-    // que l'écriture, donc pas de race condition entre deux annulations.
+    // Mutation atomique : propriétaire, statut et fenêtre des 48h sont vérifiés
+    // dans la MÊME requête que l'écriture. Deux annulations concurrentes sur la
+    // même réservation ne peuvent donc jamais réussir toutes les deux : la
+    // première verrouille la ligne et passe, la seconde ne trouve plus de ligne
+    // correspondant aux conditions (pas de race condition TOCTOU).
     const { rows } = await pool.query(
       `UPDATE bookings
        SET status = 'cancelled', cancelled_at = NOW()
@@ -144,8 +147,10 @@ export async function cancelBooking(req, res, next) {
       return res.json({ message: 'Réservation annulée', booking: rows[0] });
     }
 
-    // L'UPDATE n'a touché aucune ligne : on interroge sans filtre pour
-    // savoir laquelle des raisons s'applique, et renvoyer le bon code.
+    // L'UPDATE n'a touché aucune ligne : on relit sans filtre pour déterminer
+    // la raison exacte et renvoyer le bon code (404 / 403 / 409). Cette lecture
+    // est uniquement diagnostique, elle n'entraîne aucune écriture donc aucune
+    // race condition possible ici.
     const { rows: diagRows } = await pool.query(
       'SELECT user_id, status, scheduled_at FROM bookings WHERE id = $1',
       [id]
@@ -165,6 +170,23 @@ export async function cancelBooking(req, res, next) {
     return res.status(403).json({
       error: `Annulation impossible moins de ${CANCEL_WINDOW_HOURS}h avant l'expérience`,
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getAllBookings(req, res, next) {
+  try {
+    // Vue admin : toutes les réservations, tous membres confondus
+    const { rows } = await pool.query(
+      `SELECT b.id, b.user_id, u.first_name, u.last_name, b.experience_id, e.name AS experience_name,
+              b.scheduled_at, b.participants, b.status, b.created_at, b.cancelled_at
+       FROM bookings b
+       JOIN users u ON u.id = b.user_id
+       JOIN experiences e ON e.id = b.experience_id
+       ORDER BY b.scheduled_at DESC`
+    );
+    res.json(rows);
   } catch (err) {
     next(err);
   }

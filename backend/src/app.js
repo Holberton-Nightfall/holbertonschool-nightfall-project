@@ -6,6 +6,7 @@ import experiencesRoutes from './routes/experiences.routes.js';
 import categoriesRoutes from './routes/categories.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import bookingsRoutes from './routes/bookings.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/categories', categoriesRoutes);
 app.use('/api/experiences', experiencesRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingsRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Route inconnue : 404 en JSON
 app.use((req, res) => {
