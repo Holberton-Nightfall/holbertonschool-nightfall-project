@@ -1,6 +1,7 @@
 // backend/src/routes/bookings.routes.js
 import { Router } from 'express';
-import { createBooking, getBookings, cancelBooking } from '../controllers/bookings.controller.js';
+import { Router } from 'express';
+import { createBooking, getBookings, getBookingById, cancelBooking } from '../controllers/bookings.controller.js';
 import { requireAuth } from '../middlewares/auth.js';
 
 const router = Router();
@@ -10,6 +11,7 @@ router.use(requireAuth);
 
 router.post('/', createBooking);
 router.get('/', getBookings);
+router.get('/:id', getBookingById);
 router.delete('/:id', cancelBooking);
 
 export default router;
