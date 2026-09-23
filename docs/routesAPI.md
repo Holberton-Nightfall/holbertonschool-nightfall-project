@@ -265,7 +265,7 @@ Les résultats sont triés par nom.
 
 | Paramètre | Description | Exemple |
 |---|---|---|
-| `search` | Recherche partielle, insensible à la casse, sur le nom | `?search=bunker` |
+| `search` | Recherche partielle, insensible à la casse, sur le nom ou la description| `?search=bunker` |
 | `category` | Filtre par **id** de catégorie (entier, sinon 400) | `?category=2` |
 
 Les paramètres se combinent : `?search=bunker&category=1`.
