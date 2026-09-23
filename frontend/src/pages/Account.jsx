@@ -416,18 +416,14 @@ export default function Account() {
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6 md:max-w-2xl lg:max-w-5xl">
       <h1 className="text-glow-crimson text-2xl text-accent">Mon compte</h1>
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-        <div className="flex flex-col gap-6 lg:w-1/2">
-          <ProfileSection user={user} />
-          <EmailSection user={user} />
-          <PasswordSection />
-          <Button variant="ghost" onClick={handleLogout} className="w-full sm:w-auto">Se déconnecter</Button>
-          <DangerZoneSection />
-        </div>
-        <div className="lg:w-1/2">
-          <BookingsSection />
-        </div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <ProfileSection user={user} />
+        <DangerZoneSection />
+        <EmailSection user={user} />
+        <PasswordSection />
       </div>
+      <Button variant="ghost" onClick={handleLogout} className="w-full sm:w-auto">Se déconnecter</Button>
+      <BookingsSection />
     </div>
   );
 }
