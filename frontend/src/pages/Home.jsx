@@ -54,7 +54,7 @@ export default function Home() {
             >
               Nightfall
             </h1>
-            <p className="mb-4 max-w-[65ch] font-heading text-sm font-black uppercase tracking-[.03em] text-text [text-shadow:0_0_10px_rgba(255,13,57,.8),0_0_28px_rgba(255,13,57,.4)] sm:text-base md:max-w-none md:whitespace-nowrap md:text-2xl">
+            <p className="mb-4 max-w-[65ch] font-heading text-sm font-black uppercase tracking-[.03em] text-text [text-shadow:0_0_10px_rgba(255,13,57,.8),0_0_28px_rgba(255,13,57,.4)] sm:text-base md:max-w-[40ch] md:text-xl lg:max-w-none lg:whitespace-nowrap lg:text-2xl">
               Pas de spectateurs : vous êtes acteur de votre propre survie.
             </p>
             <p className="mb-4 max-w-[46ch] text-base text-text [text-shadow:0_2px_6px_#000] sm:max-w-[65ch] sm:text-[1.1rem]">
