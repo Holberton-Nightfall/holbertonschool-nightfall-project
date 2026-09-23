@@ -50,3 +50,5 @@ export const setExperienceArchived = (id, isArchived, token) =>
     headers: withAuth(token),
     body: JSON.stringify({ is_archived: isArchived }),
   });
+
+export const getAllBookings = (token) => request('/admin/bookings', { headers: withAuth(token) });
