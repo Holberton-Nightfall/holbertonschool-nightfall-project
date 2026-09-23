@@ -4,16 +4,36 @@ import Button from '../components/ui/Button.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function AdminExperiences() {
-  const { getAdminExperiences } = useAuth();
+  const { getAdminExperiences, setExperienceArchived } = useAuth();
   const [experiences, setExperiences] = useState([]);
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [error, setError] = useState(null);
+  // id de la ligne en cours de modification : désactive son bouton le temps de l'appel
+  const [pendingId, setPendingId] = useState(null);
+  const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
     getAdminExperiences()
       .then((data) => { setExperiences(data); setStatus('ready'); })
       .catch((err) => { setError(err.message || 'Chargement impossible'); setStatus('error'); });
   }, []);
+
+  const handleArchive = async (exp) => {
+    setActionError(null);
+    setPendingId(exp.id);
+    try {
+      // On relit is_archived depuis la réponse plutôt que d'inverser à l'aveugle :
+      // l'état affiché vient du serveur.
+      const { experience } = await setExperienceArchived(exp.id, !exp.is_archived);
+      setExperiences((prev) => prev.map((e) => (
+        e.id === exp.id ? { ...e, is_archived: experience.is_archived } : e
+      )));
+    } catch (err) {
+      setActionError(err.message || 'Action impossible');
+    } finally {
+      setPendingId(null);
+    }
+  };
 
   return (
     <section className="flex flex-col gap-6">
@@ -24,6 +44,7 @@ export default function AdminExperiences() {
 
       {status === 'loading' && <p className="text-text-muted">Chargement…</p>}
       {status === 'error' && <p role="alert" className="text-accent">{error}</p>}
+      {actionError && <p role="alert" className="text-accent">{actionError}</p>}
 
       {status === 'ready' && (
         <div className="overflow-x-auto">
@@ -55,8 +76,12 @@ export default function AdminExperiences() {
                   <td className="p-3">
                     <div className="flex gap-2">
                       <Button variant="ghost" disabled>Modifier</Button>
-                      <Button variant="ghost" disabled>
-                        {e.is_archived ? 'Restaurer' : 'Archiver'}
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleArchive(e)}
+                        disabled={pendingId === e.id}
+                      >
+                        {pendingId === e.id ? '…' : (e.is_archived ? 'Restaurer' : 'Archiver')}
                       </Button>
                     </div>
                   </td>

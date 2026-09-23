@@ -11,6 +11,7 @@ import {
   getBookings as apiGetBookings,
   cancelBooking as apiCancelBooking,
   getAdminExperiences as apiGetAdminExperiences,
+  setExperienceArchived as apiSetExperienceArchived,
 } from '../services/api.js';
 
 const TOKEN_KEY = 'nightfall_token';
@@ -83,11 +84,12 @@ export function AuthProvider({ children }) {
 
   // Admin : liste incluant les expériences archivées
   const getAdminExperiences = () => apiGetAdminExperiences(token);
+  const setExperienceArchived = (id, isArchived) => apiSetExperienceArchived(id, isArchived, token);
 
   const value = {
     user, status, isAuthenticated: Boolean(user),
     login, register, logout, updateProfile, updateEmail, updatePassword, deleteAccount,
-    createBooking, getBookings, cancelBooking, getAdminExperiences,
+    createBooking, getBookings, cancelBooking, getAdminExperiences, setExperienceArchived,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -42,3 +42,11 @@ export const cancelBooking = (id, token) => request(`/bookings/${id}`, { method:
 
 // Admin : inclut les expériences archivées, contrairement à getExperiences
 export const getAdminExperiences = (token) => request('/admin/experiences', { headers: withAuth(token) });
+
+// Archive (true) ou restaure (false) une expérience
+export const setExperienceArchived = (id, isArchived, token) =>
+  request(`/admin/experiences/${id}/archive`, {
+    method: 'PATCH',
+    headers: withAuth(token),
+    body: JSON.stringify({ is_archived: isArchived }),
+  });
