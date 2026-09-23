@@ -2,6 +2,9 @@ import Card from '../components/ui/Card.jsx';
 import Button from '../components/ui/Button.jsx';
 import Badge from '../components/ui/Badge.jsx';
 
+// Contenu marketing statique (page vitrine), volontairement pas branché sur
+// l'API : ZONES n'est qu'un teaser vers /catalogue, pas la liste réelle des
+// expériences.
 const ZONES = [
   { img: 'bunker-7', name: 'Bunker 7', text: 'Ultime refuge sous terre. Les lumières ne restent jamais allumées longtemps.', level: 'secure', tag: 'Niveau 2' },
   { img: 'slaughterhouse', name: 'Slaughterhouse', text: 'Chaînes rouillées, sol poisseux. Ce qui y travaillait n’est pas parti.', level: 'critical', tag: 'Niveau 5' },

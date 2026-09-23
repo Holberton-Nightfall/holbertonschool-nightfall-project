@@ -15,6 +15,8 @@ import Terms from './pages/Terms.jsx';
 import NotFound from './pages/NotFound.jsx';
 import RequireAuth from './components/auth/RequireAuth.jsx';
 
+// Routeur principal : toutes les pages partagent le même Layout (header/footer).
+// RequireAuth protège les routes qui exigent une session (compte, réservation).
 export default function App() {
   return (
     <Routes>
@@ -22,6 +24,9 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="catalogue" element={<Catalogue />} />
         <Route path="experiences/:id" element={<ExperienceDetail />} />
+        {/* /test et /test/:id : pages de vérification visuelle sur seed statique
+            (src/mocks/experiences.js), tant que GET /api/experiences n'est pas
+            branché. À supprimer une fois l'API dispo (voir docs/suivi.md). */}
         <Route path="test" element={<CatalogueTest />} />
         <Route path="test/:id" element={<ExperienceDetailTest />} />
         <Route path="connexion" element={<Login />} />

@@ -6,10 +6,11 @@ import { getExperienceById } from '../services/api.js';
 
 const FALLBACK_IMAGE = '/images/nightfall.jpeg';
 
+// Fiche publique branchée sur GET /api/experiences/:id.
 export default function ExperienceDetail() {
   const { id } = useParams();
   const [experience, setExperience] = useState(null);
-  const [status, setStatus] = useState('loading');
+  const [status, setStatus] = useState('loading'); // loading | ready | not-found | error
 
   useEffect(() => {
     setStatus('loading');

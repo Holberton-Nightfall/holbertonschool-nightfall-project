@@ -6,9 +6,11 @@ import { getExperiences } from '../services/api.js';
 
 const FALLBACK_IMAGE = '/images/nightfall.jpeg';
 
+// Catalogue public branché sur GET /api/experiences (déjà implémenté côté
+// backend, contrairement à /test qui utilise un seed statique).
 export default function Catalogue() {
   const [experiences, setExperiences] = useState([]);
-  const [status, setStatus] = useState('loading');
+  const [status, setStatus] = useState('loading'); // loading | ready | error
 
   useEffect(() => {
     getExperiences()
