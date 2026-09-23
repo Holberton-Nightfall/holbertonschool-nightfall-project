@@ -15,8 +15,15 @@ export async function request(path, { headers, ...options } = {}) {
   return res.json();
 }
 
-export const getExperiences = () => request('/experiences');
+export const getExperiences = (params = {}) => {
+  const query = new URLSearchParams();
+  if (params.search) query.set('search', params.search);
+  if (params.category) query.set('category', params.category);
+  const qs = query.toString();
+  return request(`/experiences${qs ? `?${qs}` : ''}`);
+};
 export const getExperienceById = (id) => request(`/experiences/${id}`);
+export const getCategories = () => request('/categories');
 
 const withAuth = (token) => ({ Authorization: `Bearer ${token}` });
 
