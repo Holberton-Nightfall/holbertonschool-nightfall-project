@@ -4,12 +4,10 @@ import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import { getExperiences, getCategories } from '../services/api.js';
 import { inputField } from '../lib/classNames.js';
+import { FALLBACK_IMAGE } from '../lib/constants.js';
 
-const FALLBACK_IMAGE = '/images/nightfall.jpeg';
 const SEARCH_DEBOUNCE_MS = 300;
 
-// Catalogue public branché sur GET /api/experiences (déjà implémenté côté
-// backend, contrairement à /test qui utilise un seed statique).
 export default function Catalogue() {
   const [searchParams, setSearchParams] = useSearchParams();
   const urlSearch = searchParams.get('search') || '';

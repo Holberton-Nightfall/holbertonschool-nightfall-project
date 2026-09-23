@@ -4,6 +4,7 @@ import Button from '../components/ui/Button.jsx';
 import PasswordInput from '../components/ui/PasswordInput.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { inputField } from '../lib/classNames.js';
+import { EMAIL_RE } from '../lib/constants.js';
 
 export default function Login() {
   const { login, isAuthenticated, status } = useAuth();
@@ -16,7 +17,7 @@ export default function Login() {
   // `from` vient de RequireAuth (redirection avec la page d'origine en state) :
   // permet de revenir sur la page demandée après connexion, /compte par défaut.
   const from = location.state?.from?.pathname || '/compte';
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+  const emailValid = EMAIL_RE.test(form.email);
   const canSubmit = emailValid && form.password.length > 0;
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
