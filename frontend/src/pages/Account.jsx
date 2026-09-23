@@ -40,26 +40,28 @@ function ProfileSection({ user }) {
     <section className={sectionClass}>
       <h2 className="text-glow-crimson mb-4 text-lg text-accent">Informations personnelles</h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm text-text-muted">
-          Prénom
-          <input
-            type="text"
-            value={form.first_name}
-            onChange={(e) => { setForm((f) => ({ ...f, first_name: e.target.value })); setStatus('idle'); }}
-            required
-            className={inputField}
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm text-text-muted">
-          Nom
-          <input
-            type="text"
-            value={form.last_name}
-            onChange={(e) => { setForm((f) => ({ ...f, last_name: e.target.value })); setStatus('idle'); }}
-            required
-            className={inputField}
-          />
-        </label>
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <label className="flex flex-1 flex-col gap-1 text-sm text-text-muted">
+            Prénom
+            <input
+              type="text"
+              value={form.first_name}
+              onChange={(e) => { setForm((f) => ({ ...f, first_name: e.target.value })); setStatus('idle'); }}
+              required
+              className={inputField}
+            />
+          </label>
+          <label className="flex flex-1 flex-col gap-1 text-sm text-text-muted">
+            Nom
+            <input
+              type="text"
+              value={form.last_name}
+              onChange={(e) => { setForm((f) => ({ ...f, last_name: e.target.value })); setStatus('idle'); }}
+              required
+              className={inputField}
+            />
+          </label>
+        </div>
         {error && <p role="alert" className="text-accent">{error}</p>}
         {status === 'done' && <p className="text-accent-2">Profil mis à jour.</p>}
         <Button type="submit" variant="ghost" disabled={!canSubmit || status === 'saving'} className="w-full sm:w-auto">
@@ -341,7 +343,7 @@ function BookingsSection() {
           {upcoming.length === 0 ? (
             <p className="text-text-muted">Aucune réservation à venir.</p>
           ) : (
-            <ul className="flex flex-col gap-3">
+            <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
               {upcoming.map((b) => (
                 <BookingRow key={b.id} booking={b} onCancel={openCancel} />
               ))}
@@ -361,7 +363,7 @@ function BookingsSection() {
             history.length === 0 ? (
               <p className="mt-2 text-text-muted">Aucun événement passé.</p>
             ) : (
-              <ul className="mt-2 flex flex-col gap-3">
+              <ul className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2">
                 {history.map((b) => <BookingRow key={b.id} booking={b} />)}
               </ul>
             )
@@ -402,14 +404,20 @@ export default function Account() {
   };
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-6">
+    <div className="mx-auto flex max-w-md flex-col gap-6 md:max-w-2xl lg:max-w-5xl">
       <h1 className="text-glow-crimson text-2xl text-accent">Mon compte</h1>
-      <ProfileSection user={user} />
-      <EmailSection user={user} />
-      <PasswordSection />
-      <BookingsSection />
-      <Button variant="ghost" onClick={handleLogout} className="w-full sm:w-auto">Se déconnecter</Button>
-      <DangerZoneSection />
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <div className="flex flex-col gap-6 lg:w-1/2">
+          <ProfileSection user={user} />
+          <EmailSection user={user} />
+          <PasswordSection />
+          <Button variant="ghost" onClick={handleLogout} className="w-full sm:w-auto">Se déconnecter</Button>
+          <DangerZoneSection />
+        </div>
+        <div className="lg:w-1/2">
+          <BookingsSection />
+        </div>
+      </div>
     </div>
   );
 }
