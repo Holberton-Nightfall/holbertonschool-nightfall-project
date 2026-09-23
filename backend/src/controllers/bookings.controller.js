@@ -69,19 +69,33 @@ export async function createBooking(req, res, next) {
   }
 }
 
-export async function getBookings(req, res, next) {
+export async function getBookingById(req, res, next) {
   try {
+    const id = parsePositiveInt(req.params.id);
+    if (id === null) {
+      return res.status(400).json({ error: 'Identifiant invalide' });
+    }
+
     const { rows } = await pool.query(
-      `SELECT b.id, b.experience_id, e.name AS experience_name, b.scheduled_at,
+      `SELECT b.id, b.user_id, b.experience_id, e.name AS experience_name, b.scheduled_at,
               b.participants, b.status,
               (b.status = 'confirmed' AND b.scheduled_at > NOW() + INTERVAL '${CANCEL_WINDOW_HOURS} hours') AS can_cancel
        FROM bookings b
        JOIN experiences e ON e.id = b.experience_id
-       WHERE b.user_id = $1
-       ORDER BY b.scheduled_at`,
-      [req.user.id]
+       WHERE b.id = $1`,
+      [id]
     );
-    res.json(rows);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Réservation introuvable' });
+    }
+
+    const { user_id: ownerId, ...booking } = rows[0];
+    if (ownerId !== req.user.id) {
+      return res.status(403).json({ error: 'Accès refusé à cette réservation' });
+    }
+
+    res.json(booking);
   } catch (err) {
     next(err);
   }
@@ -95,7 +109,7 @@ export async function cancelBooking(req, res, next) {
     }
 
     // Mutation atomique : la fenêtre des 48h est vérifiée dans la même requête
-    // que l'écriture, donc pas de race condition entre lecture et annulation.
+    // que l'écriture, donc pas de race condition entre deux annulations.
     const { rows } = await pool.query(
       `UPDATE bookings
        SET status = 'cancelled', cancelled_at = NOW()
@@ -103,16 +117,16 @@ export async function cancelBooking(req, res, next) {
          AND user_id = $2
          AND status = 'confirmed'
          AND scheduled_at > NOW() + INTERVAL '${CANCEL_WINDOW_HOURS} hours'
-       RETURNING id, experience_id, scheduled_at, participants, status, cancelled_at`,
+       RETURNING id, status`,
       [id, req.user.id]
     );
 
     if (rows.length === 1) {
-      return res.json(rows[0]);
+      return res.json({ message: 'Réservation annulée', booking: rows[0] });
     }
 
     // L'UPDATE n'a touché aucune ligne : on interroge sans filtre pour
-    // savoir laquelle des 4 raisons s'applique, et renvoyer le bon code.
+    // savoir laquelle des raisons s'applique, et renvoyer le bon code.
     const { rows: diagRows } = await pool.query(
       'SELECT user_id, status, scheduled_at FROM bookings WHERE id = $1',
       [id]
@@ -124,13 +138,13 @@ export async function cancelBooking(req, res, next) {
 
     const booking = diagRows[0];
     if (booking.user_id !== req.user.id) {
-      return res.status(403).json({ error: "Vous n'êtes pas propriétaire de cette réservation" });
+      return res.status(403).json({ error: 'Accès refusé à cette réservation' });
     }
     if (booking.status !== 'confirmed') {
-      return res.status(400).json({ error: 'Cette réservation est déjà annulée' });
+      return res.status(409).json({ error: 'Réservation déjà annulée' });
     }
-    return res.status(400).json({
-      error: `Annulation impossible à moins de ${CANCEL_WINDOW_HOURS}h du créneau`,
+    return res.status(403).json({
+      error: `Annulation impossible moins de ${CANCEL_WINDOW_HOURS}h avant l'expérience`,
     });
   } catch (err) {
     next(err);
