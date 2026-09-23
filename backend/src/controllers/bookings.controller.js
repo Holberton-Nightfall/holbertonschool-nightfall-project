@@ -76,3 +76,81 @@ export async function getBookings(req, res, next) {
     next(err);
   }
 }
+
+export async function getBookingById(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: 'Identifiant invalide' });
+    }
+
+    const { rows } = await pool.query(
+      `SELECT b.id, b.user_id, b.experience_id, e.name AS experience_name, b.scheduled_at,
+              b.participants, b.status,
+              (b.status = 'confirmed' AND b.scheduled_at > NOW() + INTERVAL '${CANCEL_WINDOW_HOURS} hours') AS can_cancel
+       FROM bookings b
+       JOIN experiences e ON e.id = b.experience_id
+       WHERE b.id = $1`,
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Réservation introuvable' });
+    }
+
+    const { user_id: ownerId, ...booking } = rows[0];
+    if (ownerId !== req.user.id) {
+      return res.status(403).json({ error: 'Accès refusé à cette réservation' });
+    }
+
+    res.json(booking);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function cancelBooking(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: 'Identifiant invalide' });
+    }
+
+    const { rows } = await pool.query(
+      'SELECT id, user_id, status, scheduled_at FROM bookings WHERE id = $1',
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Réservation introuvable' });
+    }
+
+    const booking = rows[0];
+
+    if (booking.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Accès refusé à cette réservation' });
+    }
+
+    if (booking.status === 'cancelled') {
+      return res.status(409).json({ error: 'Réservation déjà annulée' });
+    }
+
+    const hoursUntilExperience = (new Date(booking.scheduled_at).getTime() - Date.now()) / (1000 * 60 * 60);
+    if (hoursUntilExperience <= CANCEL_WINDOW_HOURS) {
+      return res.status(403).json({
+        error: `Annulation impossible moins de ${CANCEL_WINDOW_HOURS}h avant l'expérience`,
+      });
+    }
+
+    const { rows: updatedRows } = await pool.query(
+      `UPDATE bookings SET status = 'cancelled', cancelled_at = NOW()
+       WHERE id = $1
+       RETURNING id, status`,
+      [id]
+    );
+
+    res.json({ message: 'Réservation annulée', booking: updatedRows[0] });
+  } catch (err) {
+    next(err);
+  }
+}
