@@ -37,8 +37,8 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 | Recherche par nom + filtre par catégorie (API) | Jason | `feat/api-search` | ✅ |
 | `DELETE /api/bookings/:id` (règle des 48 h + propriétaire) | Jason | `feat/api-cancel` | 🟡 |
 | Routes admin (CRUD / archivage, liste des réservations) | Jason | `feat/api-admin` | ⬜ |
-| Recherche + filtre catégorie (interface) | Tom | `feat/search-filters` | ⬜ |
-| Déconnexion + bouton d'annulation | Tom | `feat/cancel-booking` | ⬜ |
+| Recherche + filtre catégorie (interface) | Tom | `feat/search-filters` | 🟡 |
+| Déconnexion + bouton d'annulation | Tom | `feat/cancel-booking` | ✅ |
 | Responsive + charte graphique NIGHTFALL | Tom | `feat/responsive` | ✅ |
 | Espace admin : gestion des expériences | Benjamin | `feat/admin-experiences` | ⬜ |
 | Espace admin : liste des réservations | Benjamin | `feat/admin-bookings` | ⬜ |
