@@ -10,6 +10,7 @@ import {
   createBooking as apiCreateBooking,
   getBookings as apiGetBookings,
   cancelBooking as apiCancelBooking,
+  getAdminExperiences as apiGetAdminExperiences,
 } from '../services/api.js';
 
 const TOKEN_KEY = 'nightfall_token';
@@ -80,10 +81,13 @@ export function AuthProvider({ children }) {
   const getBookings = () => apiGetBookings(token);
   const cancelBooking = (id) => apiCancelBooking(id, token);
 
+  // Admin : liste incluant les expériences archivées
+  const getAdminExperiences = () => apiGetAdminExperiences(token);
+
   const value = {
     user, status, isAuthenticated: Boolean(user),
     login, register, logout, updateProfile, updateEmail, updatePassword, deleteAccount,
-    createBooking, getBookings, cancelBooking,
+    createBooking, getBookings, cancelBooking, getAdminExperiences,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

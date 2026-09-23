@@ -1,18 +1,16 @@
 import { useEffect, useState } from 'react';
 import Badge from '../components/ui/Badge.jsx';
 import Button from '../components/ui/Button.jsx';
-import { getExperiences } from '../services/api.js';
+import { useAuth } from '../context/AuthContext.jsx';
 
-// ⚠️ GET /api/experiences exclut les expériences archivées : elles
-// n'apparaissent donc pas encore ici. À remplacer par
-// GET /api/admin/experiences quand la route existera (PR #28).
 export default function AdminExperiences() {
+  const { getAdminExperiences } = useAuth();
   const [experiences, setExperiences] = useState([]);
   const [status, setStatus] = useState('loading'); // loading | ready | error
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getExperiences()
+    getAdminExperiences()
       .then((data) => { setExperiences(data); setStatus('ready'); })
       .catch((err) => { setError(err.message || 'Chargement impossible'); setStatus('error'); });
   }, []);
@@ -57,7 +55,9 @@ export default function AdminExperiences() {
                   <td className="p-3">
                     <div className="flex gap-2">
                       <Button variant="ghost" disabled>Modifier</Button>
-                      <Button variant="ghost" disabled>Archiver</Button>
+                      <Button variant="ghost" disabled>
+                        {e.is_archived ? 'Restaurer' : 'Archiver'}
+                      </Button>
                     </div>
                   </td>
                 </tr>

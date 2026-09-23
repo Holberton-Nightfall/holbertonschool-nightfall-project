@@ -31,9 +31,6 @@ export const register = (data) => request('/auth/register', { method: 'POST', bo
 export const login = (data) => request('/auth/login', { method: 'POST', body: JSON.stringify(data) });
 export const getMe = (token) => request('/auth/me', { headers: withAuth(token) });
 
-// ⚠️ Routes pas encore définies dans docs/routesAPI.md ni implémentées côté backend :
-// à ajouter au contrat d'API (PUT /api/auth/me, /auth/email, /auth/password) avant que
-// la page Mon compte (modification profil / email / mot de passe) fonctionne réellement.
 export const updateProfile = (data, token) => request('/auth/me', { method: 'PUT', headers: withAuth(token), body: JSON.stringify(data) });
 export const updateEmail = (data, token) => request('/auth/email', { method: 'PUT', headers: withAuth(token), body: JSON.stringify(data) });
 export const updatePassword = (data, token) => request('/auth/password', { method: 'PUT', headers: withAuth(token), body: JSON.stringify(data) });
@@ -42,3 +39,6 @@ export const deleteAccount = (token) => request('/auth/me', { method: 'DELETE', 
 export const createBooking = (data, token) => request('/bookings', { method: 'POST', headers: withAuth(token), body: JSON.stringify(data) });
 export const getBookings = (token) => request('/bookings', { headers: withAuth(token) });
 export const cancelBooking = (id, token) => request(`/bookings/${id}`, { method: 'DELETE', headers: withAuth(token) });
+
+// Admin : inclut les expériences archivées, contrairement à getExperiences
+export const getAdminExperiences = (token) => request('/admin/experiences', { headers: withAuth(token) });
