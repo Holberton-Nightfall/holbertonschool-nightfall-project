@@ -7,10 +7,9 @@ import Modal from '../components/ui/Modal.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { inputField } from '../lib/classNames.js';
-import { PASSWORD_RULES } from '../lib/passwordRules.js';
+import { isPasswordValid } from '../lib/passwordRules.js';
 import { formatDateTime } from '../lib/slots.js';
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { EMAIL_RE } from '../lib/constants.js';
 
 const sectionClass = 'clip-corner border border-border bg-bg-elevated/60 p-6';
 
@@ -144,7 +143,7 @@ function PasswordSection() {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
 
-  const passwordValid = PASSWORD_RULES.every((rule) => rule.test(newPassword));
+  const passwordValid = isPasswordValid(newPassword);
   const passwordsMatch = confirmPassword.length === 0 || newPassword === confirmPassword;
   const canSubmit = currentPassword.length > 0 && passwordValid && newPassword === confirmPassword;
 
@@ -416,18 +415,14 @@ export default function Account() {
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6 md:max-w-2xl lg:max-w-5xl">
       <h1 className="text-glow-crimson text-2xl text-accent">Mon compte</h1>
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-        <div className="flex flex-col gap-6 lg:w-1/2">
-          <ProfileSection user={user} />
-          <EmailSection user={user} />
-          <PasswordSection />
-          <Button variant="ghost" onClick={handleLogout} className="w-full sm:w-auto">Se déconnecter</Button>
-          <DangerZoneSection />
-        </div>
-        <div className="lg:w-1/2">
-          <BookingsSection />
-        </div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <ProfileSection user={user} />
+        <DangerZoneSection />
+        <EmailSection user={user} />
+        <PasswordSection />
       </div>
+      <Button variant="ghost" onClick={handleLogout} className="w-full sm:w-auto">Se déconnecter</Button>
+      <BookingsSection />
     </div>
   );
 }

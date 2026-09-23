@@ -3,8 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import Button from '../components/ui/Button.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import { getExperienceById } from '../services/api.js';
-
-const FALLBACK_IMAGE = '/images/nightfall.jpeg';
+import { FALLBACK_IMAGE } from '../lib/constants.js';
 
 // Fiche publique branchée sur GET /api/experiences/:id.
 export default function ExperienceDetail() {
@@ -38,7 +37,7 @@ export default function ExperienceDetail() {
         ← Retour au catalogue
       </Link>
 
-      <div className="clip-corner relative mb-6 aspect-[16/9] overflow-hidden border-b-2 border-accent">
+      <div className="clip-corner relative mb-6 aspect-[8/3] overflow-hidden border-b-2 border-accent lg:aspect-[3/1]">
         <img
           src={e.image_url || FALLBACK_IMAGE}
           alt=""
@@ -52,15 +51,18 @@ export default function ExperienceDetail() {
 
       <h1 className="text-glow-crimson mb-2 text-2xl text-text">{e.name}</h1>
       <p className="mb-4 font-heading text-sm uppercase tracking-[.05em] text-accent-2">{e.category_name}</p>
-      <p className="mb-6 max-w-[65ch] text-text-muted">{e.description}</p>
 
-      <ul className="mb-6 flex flex-wrap gap-x-6 gap-y-2 text-text">
-        <li>Durée : {e.duration_min} min</li>
-        <li>Participants max : {e.max_participants}</li>
-        <li>Prix : {Number(e.price).toFixed(2)} €</li>
-      </ul>
-
-      <Button to={`/reservation/${e.id}`} className="w-full sm:w-auto">Réserver</Button>
+      <div className="mb-6 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-start">
+        <div className="flex flex-col gap-4">
+          <p className="max-w-[65ch] text-text-muted">{e.description}</p>
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-text">
+            <li>Durée : {e.duration_min} min</li>
+            <li>Participants max : {e.max_participants}</li>
+            <li>Prix : {Number(e.price).toFixed(2)} €</li>
+          </ul>
+        </div>
+        <Button to={`/reservation/${e.id}`} className="w-full sm:w-auto lg:shrink-0 lg:translate-x-1/2">Réserver</Button>
+      </div>
     </article>
   );
 }
