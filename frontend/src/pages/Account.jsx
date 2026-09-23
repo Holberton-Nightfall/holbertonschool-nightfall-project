@@ -228,7 +228,8 @@ function DangerZoneSection() {
   };
 
   return (
-    <section className="clip-corner border border-accent/40 bg-bg-elevated/60 p-6">
+    <section className="clip-corner relative border-2 border-accent bg-bg-elevated/60 p-6 md:p-8">
+      <div className="danger-stripe absolute inset-x-0 -top-px h-1.5" aria-hidden="true" />
       <h2 className="text-glow-crimson mb-2 text-lg text-accent">Zone dangereuse</h2>
       <p className="mb-4 text-sm text-text-muted">
         La suppression désactive votre compte et vous déconnecte. Vos réservations passées restent conservées.
@@ -415,14 +416,14 @@ export default function Account() {
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6 md:max-w-2xl lg:max-w-5xl">
       <h1 className="text-glow-crimson text-2xl text-accent">Mon compte</h1>
+      <ProfileSection user={user} />
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <ProfileSection user={user} />
-        <DangerZoneSection />
         <EmailSection user={user} />
         <PasswordSection />
       </div>
       <Button variant="ghost" onClick={handleLogout} className="w-full sm:w-auto">Se déconnecter</Button>
       <BookingsSection />
+      <DangerZoneSection />
     </div>
   );
 }
