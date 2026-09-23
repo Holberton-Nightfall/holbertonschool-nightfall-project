@@ -154,3 +154,20 @@ export async function cancelBooking(req, res, next) {
     next(err);
   }
 }
+
+export async function getAllBookings(req, res, next) {
+  try {
+    // Vue admin : toutes les réservations, tous membres confondus
+    const { rows } = await pool.query(
+      `SELECT b.id, b.user_id, u.first_name, u.last_name, b.experience_id, e.name AS experience_name,
+              b.scheduled_at, b.participants, b.status, b.created_at, b.cancelled_at
+       FROM bookings b
+       JOIN users u ON u.id = b.user_id
+       JOIN experiences e ON e.id = b.experience_id
+       ORDER BY b.scheduled_at DESC`
+    );
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+}
