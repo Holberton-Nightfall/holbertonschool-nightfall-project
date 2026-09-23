@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createBooking, getBookings } from '../controllers/bookings.controller.js';
+import { createBooking, getBookings, getBookingById, cancelBooking } from '../controllers/bookings.controller.js';
 import { requireAuth } from '../middlewares/auth.js';
 
 const router = Router();
@@ -9,5 +9,7 @@ router.use(requireAuth);
 
 router.post('/', createBooking);
 router.get('/', getBookings);
+router.get('/:id', getBookingById);
+router.delete('/:id', cancelBooking);
 
 export default router;

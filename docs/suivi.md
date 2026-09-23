@@ -34,7 +34,7 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 
 | Tâche | Responsable | Branche | Statut |
 |---|---|---|---|
-| Recherche par nom + filtre par catégorie (API) | Jason | `feat/api-search` | ⬜ |
+| Recherche par nom + filtre par catégorie + prix + intensité (API) | Jason | `feat/api-search` | ✅ |
 | `DELETE /api/bookings/:id` (règle des 48 h + propriétaire) | Jason | `feat/api-cancel` | ⬜ |
 | Routes admin (CRUD / archivage, liste des réservations) | Jason | `feat/api-admin` | ⬜ |
 | Recherche + filtre catégorie (interface) | Tom | `feat/search-filters` | ⬜ |
