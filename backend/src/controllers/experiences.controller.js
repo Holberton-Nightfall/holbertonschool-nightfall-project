@@ -67,7 +67,7 @@ export async function getExperiences(req, res, next) {
     const params = [];
     let paramIndex = 1;
 
-    // Filtre de recherche partielle sur le nom (insensible à la casse avec ILIKE)
+    // Recherche partielle, insensible à la casse, sur le nom OU la description
     if (search) {
       query += ` AND (e.name ILIKE $${paramIndex} OR e.description ILIKE $${paramIndex})`;
       params.push(`%${search}%`);
@@ -130,6 +130,22 @@ export async function getExperienceById(req, res, next) {
       return res.status(404).json({ error: 'Expérience introuvable' });
     }
     res.json(rows[0]);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getAllExperiencesAdmin(req, res, next) {
+  try {
+    const { rows } = await pool.query(
+      `SELECT e.id, e.name, e.description, e.image_url, e.duration_min,
+              e.intensity, e.max_participants, e.price, e.is_archived,
+              c.id AS category_id, c.name AS category_name
+       FROM experiences e
+       JOIN categories c ON c.id = e.category_id
+       ORDER BY e.is_archived, e.name`
+    );
+    res.json(rows);
   } catch (err) {
     next(err);
   }
@@ -257,24 +273,33 @@ export async function updateExperience(req, res, next) {
   }
 }
 
-export async function archiveExperience(req, res, next) {
+export async function setExperienceArchived(req, res, next) {
   try {
     const id = Number(req.params.id);
     if (!Number.isInteger(id)) {
       return res.status(400).json({ error: 'Identifiant invalide' });
     }
 
-    // Archivage plutôt que suppression : l'historique des réservations reste valide
+    const { is_archived } = req.body ?? {};
+    // Body optionnel : sans body, comportement historique de la route = archiver
+    const archived = is_archived === undefined ? true : is_archived;
+    if (typeof archived !== 'boolean') {
+      return res.status(400).json({ error: 'Données invalides', details: ['is_archived doit être un booléen'] });
+    }
+
     const { rows } = await pool.query(
-      `UPDATE experiences SET is_archived = true WHERE id = $1
+      `UPDATE experiences SET is_archived = $1 WHERE id = $2
        RETURNING id, name, is_archived`,
-      [id]
+      [archived, id]
     );
 
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Expérience introuvable' });
     }
-    res.json({ message: 'Expérience archivée', experience: rows[0] });
+    res.json({
+      message: archived ? 'Expérience archivée' : 'Expérience désarchivée',
+      experience: rows[0],
+    });
   } catch (err) {
     next(err);
   }
