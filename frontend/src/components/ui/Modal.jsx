@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Button from './Button.jsx';
 
 // Fenêtre modale générique : ferme sur Échap, clic sur le fond, ou le bouton Fermer.
+// Rendue via un portail dans document.body : sinon, une modale ouverte depuis un
+// élément avec clip-path (ex. clip-corner) reste piégée dans le contexte d'empilement
+// de cet ancêtre et passe sous les overlays scanlines/grain du Layout (z-999/z-1000).
 export default function Modal({ open, onClose, title, children }) {
   useEffect(() => {
     if (!open) return;
@@ -12,7 +16,7 @@ export default function Modal({ open, onClose, title, children }) {
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-bg/80 p-4 backdrop-blur-sm"
       onClick={onClose}
@@ -28,6 +32,7 @@ export default function Modal({ open, onClose, title, children }) {
         <div className="mb-6">{children}</div>
         <Button variant="ghost" onClick={onClose}>Fermer</Button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

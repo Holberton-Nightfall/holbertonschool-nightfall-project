@@ -7,10 +7,9 @@ import Modal from '../components/ui/Modal.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { inputField } from '../lib/classNames.js';
-import { PASSWORD_RULES } from '../lib/passwordRules.js';
+import { isPasswordValid } from '../lib/passwordRules.js';
 import { formatDateTime } from '../lib/slots.js';
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { EMAIL_RE } from '../lib/constants.js';
 
 const sectionClass = 'clip-corner border border-border bg-bg-elevated/60 p-6';
 
@@ -40,26 +39,28 @@ function ProfileSection({ user }) {
     <section className={sectionClass}>
       <h2 className="text-glow-crimson mb-4 text-lg text-accent">Informations personnelles</h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm text-text-muted">
-          Prénom
-          <input
-            type="text"
-            value={form.first_name}
-            onChange={(e) => { setForm((f) => ({ ...f, first_name: e.target.value })); setStatus('idle'); }}
-            required
-            className={inputField}
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm text-text-muted">
-          Nom
-          <input
-            type="text"
-            value={form.last_name}
-            onChange={(e) => { setForm((f) => ({ ...f, last_name: e.target.value })); setStatus('idle'); }}
-            required
-            className={inputField}
-          />
-        </label>
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <label className="flex flex-1 flex-col gap-1 text-sm text-text-muted">
+            Prénom
+            <input
+              type="text"
+              value={form.first_name}
+              onChange={(e) => { setForm((f) => ({ ...f, first_name: e.target.value })); setStatus('idle'); }}
+              required
+              className={inputField}
+            />
+          </label>
+          <label className="flex flex-1 flex-col gap-1 text-sm text-text-muted">
+            Nom
+            <input
+              type="text"
+              value={form.last_name}
+              onChange={(e) => { setForm((f) => ({ ...f, last_name: e.target.value })); setStatus('idle'); }}
+              required
+              className={inputField}
+            />
+          </label>
+        </div>
         {error && <p role="alert" className="text-accent">{error}</p>}
         {status === 'done' && <p className="text-accent-2">Profil mis à jour.</p>}
         <Button type="submit" variant="ghost" disabled={!canSubmit || status === 'saving'} className="w-full sm:w-auto">
@@ -142,7 +143,7 @@ function PasswordSection() {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
 
-  const passwordValid = PASSWORD_RULES.every((rule) => rule.test(newPassword));
+  const passwordValid = isPasswordValid(newPassword);
   const passwordsMatch = confirmPassword.length === 0 || newPassword === confirmPassword;
   const canSubmit = currentPassword.length > 0 && passwordValid && newPassword === confirmPassword;
 
@@ -227,7 +228,8 @@ function DangerZoneSection() {
   };
 
   return (
-    <section className="clip-corner border border-accent/40 bg-bg-elevated/60 p-6">
+    <section className="clip-corner relative border-2 border-accent bg-bg-elevated/60 p-6 md:p-8">
+      <div className="danger-stripe absolute inset-x-0 -top-px h-1.5" aria-hidden="true" />
       <h2 className="text-glow-crimson mb-2 text-lg text-accent">Zone dangereuse</h2>
       <p className="mb-4 text-sm text-text-muted">
         La suppression désactive votre compte et vous déconnecte. Vos réservations passées restent conservées.
@@ -296,7 +298,9 @@ function BookingsSection() {
   const [loadStatus, setLoadStatus] = useState('loading'); // loading | ready | error
   const [loadError, setLoadError] = useState(null);
   const [cancelling, setCancelling] = useState(null);
+  const [cancelStatus, setCancelStatus] = useState('idle'); // idle | saving
   const [cancelError, setCancelError] = useState(null);
+  const [cancelledMessage, setCancelledMessage] = useState(null);
   // Volet historique (réservations terminées/annulées) : toujours fermé à
   // l'arrivée sur la page, pas de mémorisation (localStorage ou autre).
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -314,18 +318,22 @@ function BookingsSection() {
     .filter((b) => b.status === 'cancelled' || new Date(b.scheduled_at) < now)
     .reverse();
 
-  const openCancel = (booking) => { setCancelError(null); setCancelling(booking); };
+  const openCancel = (booking) => { setCancelError(null); setCancelledMessage(null); setCancelling(booking); };
 
   const handleCancel = async (booking) => {
     setCancelError(null);
+    setCancelStatus('saving');
     try {
       await cancelBooking(booking.id);
       setBookings((prev) => prev.map((b) => (
         b.id === booking.id ? { ...b, status: 'cancelled', cancelled_at: new Date().toISOString() } : b
       )));
       setCancelling(null);
+      setCancelledMessage(`Réservation pour ${booking.experience_name} annulée.`);
     } catch (err) {
       setCancelError(err.message || "Impossible d'annuler cette réservation");
+    } finally {
+      setCancelStatus('idle');
     }
   };
 
@@ -333,6 +341,7 @@ function BookingsSection() {
     <section className={sectionClass}>
       <h2 className="text-glow-crimson mb-4 text-lg text-accent">Mes réservations</h2>
 
+      {cancelledMessage && <p role="status" className="mb-4 text-accent-2">{cancelledMessage}</p>}
       {loadStatus === 'loading' && <p className="text-text-muted">Chargement…</p>}
       {loadStatus === 'error' && <p role="alert" className="text-accent">{loadError}</p>}
 
@@ -341,7 +350,7 @@ function BookingsSection() {
           {upcoming.length === 0 ? (
             <p className="text-text-muted">Aucune réservation à venir.</p>
           ) : (
-            <ul className="flex flex-col gap-3">
+            <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
               {upcoming.map((b) => (
                 <BookingRow key={b.id} booking={b} onCancel={openCancel} />
               ))}
@@ -361,7 +370,7 @@ function BookingsSection() {
             history.length === 0 ? (
               <p className="mt-2 text-text-muted">Aucun événement passé.</p>
             ) : (
-              <ul className="mt-2 flex flex-col gap-3">
+              <ul className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2">
                 {history.map((b) => <BookingRow key={b.id} booking={b} />)}
               </ul>
             )
@@ -374,9 +383,12 @@ function BookingsSection() {
           <>
             <p className="mb-4 text-text-muted">
               Cette action annule votre réservation pour <span className="text-text">{cancelling.experience_name}</span>.
+              Cette décision est définitive.
             </p>
             {cancelError && <p role="alert" className="mb-4 text-accent">{cancelError}</p>}
-            <Button onClick={() => handleCancel(cancelling)}>Oui, annuler</Button>
+            <Button onClick={() => handleCancel(cancelling)} disabled={cancelStatus === 'saving'}>
+              {cancelStatus === 'saving' ? 'Annulation…' : 'Oui, annuler'}
+            </Button>
           </>
         )}
       </Modal>
@@ -402,13 +414,15 @@ export default function Account() {
   };
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-6">
+    <div className="mx-auto flex max-w-md flex-col gap-6 md:max-w-2xl lg:max-w-5xl">
       <h1 className="text-glow-crimson text-2xl text-accent">Mon compte</h1>
       <ProfileSection user={user} />
-      <EmailSection user={user} />
-      <PasswordSection />
-      <BookingsSection />
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <EmailSection user={user} />
+        <PasswordSection />
+      </div>
       <Button variant="ghost" onClick={handleLogout} className="w-full sm:w-auto">Se déconnecter</Button>
+      <BookingsSection />
       <DangerZoneSection />
     </div>
   );
