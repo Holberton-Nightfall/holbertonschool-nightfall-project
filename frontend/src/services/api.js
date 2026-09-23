@@ -34,7 +34,4 @@ export const deleteAccount = (token) => request('/auth/me', { method: 'DELETE', 
 
 export const createBooking = (data, token) => request('/bookings', { method: 'POST', headers: withAuth(token), body: JSON.stringify(data) });
 export const getBookings = (token) => request('/bookings', { headers: withAuth(token) });
-
-// ⚠️ DELETE /api/bookings/:id documenté dans docs/routesAPI.md mais pas encore
-// implémenté côté backend : cet appel échouera tant que le backend n'est pas fait.
 export const cancelBooking = (id, token) => request(`/bookings/${id}`, { method: 'DELETE', headers: withAuth(token) });

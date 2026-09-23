@@ -298,7 +298,9 @@ function BookingsSection() {
   const [loadStatus, setLoadStatus] = useState('loading'); // loading | ready | error
   const [loadError, setLoadError] = useState(null);
   const [cancelling, setCancelling] = useState(null);
+  const [cancelStatus, setCancelStatus] = useState('idle'); // idle | saving
   const [cancelError, setCancelError] = useState(null);
+  const [cancelledMessage, setCancelledMessage] = useState(null);
   // Volet historique (réservations terminées/annulées) : toujours fermé à
   // l'arrivée sur la page, pas de mémorisation (localStorage ou autre).
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -316,18 +318,22 @@ function BookingsSection() {
     .filter((b) => b.status === 'cancelled' || new Date(b.scheduled_at) < now)
     .reverse();
 
-  const openCancel = (booking) => { setCancelError(null); setCancelling(booking); };
+  const openCancel = (booking) => { setCancelError(null); setCancelledMessage(null); setCancelling(booking); };
 
   const handleCancel = async (booking) => {
     setCancelError(null);
+    setCancelStatus('saving');
     try {
       await cancelBooking(booking.id);
       setBookings((prev) => prev.map((b) => (
         b.id === booking.id ? { ...b, status: 'cancelled', cancelled_at: new Date().toISOString() } : b
       )));
       setCancelling(null);
+      setCancelledMessage(`Réservation pour ${booking.experience_name} annulée.`);
     } catch (err) {
       setCancelError(err.message || "Impossible d'annuler cette réservation");
+    } finally {
+      setCancelStatus('idle');
     }
   };
 
@@ -335,6 +341,7 @@ function BookingsSection() {
     <section className={sectionClass}>
       <h2 className="text-glow-crimson mb-4 text-lg text-accent">Mes réservations</h2>
 
+      {cancelledMessage && <p role="status" className="mb-4 text-accent-2">{cancelledMessage}</p>}
       {loadStatus === 'loading' && <p className="text-text-muted">Chargement…</p>}
       {loadStatus === 'error' && <p role="alert" className="text-accent">{loadError}</p>}
 
@@ -376,9 +383,12 @@ function BookingsSection() {
           <>
             <p className="mb-4 text-text-muted">
               Cette action annule votre réservation pour <span className="text-text">{cancelling.experience_name}</span>.
+              Cette décision est définitive.
             </p>
             {cancelError && <p role="alert" className="mb-4 text-accent">{cancelError}</p>}
-            <Button onClick={() => handleCancel(cancelling)}>Oui, annuler</Button>
+            <Button onClick={() => handleCancel(cancelling)} disabled={cancelStatus === 'saving'}>
+              {cancelStatus === 'saving' ? 'Annulation…' : 'Oui, annuler'}
+            </Button>
           </>
         )}
       </Modal>
