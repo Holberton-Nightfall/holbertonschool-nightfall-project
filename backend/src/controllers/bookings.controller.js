@@ -116,40 +116,49 @@ export async function cancelBooking(req, res, next) {
       return res.status(400).json({ error: 'Identifiant invalide' });
     }
 
+    // Mutation atomique : propriétaire, statut et fenêtre des 48h sont vérifiés
+    // dans la MÊME requête que l'écriture. Deux annulations concurrentes sur la
+    // même réservation ne peuvent donc jamais réussir toutes les deux : la
+    // première verrouille la ligne et passe, la seconde ne trouve plus de ligne
+    // correspondant aux conditions (pas de race condition TOCTOU).
     const { rows } = await pool.query(
-      'SELECT id, user_id, status, scheduled_at FROM bookings WHERE id = $1',
+      `UPDATE bookings
+       SET status = 'cancelled', cancelled_at = NOW()
+       WHERE id = $1
+         AND user_id = $2
+         AND status = 'confirmed'
+         AND scheduled_at > NOW() + INTERVAL '${CANCEL_WINDOW_HOURS} hours'
+       RETURNING id, status`,
+      [id, req.user.id]
+    );
+
+    if (rows.length === 1) {
+      return res.json({ message: 'Réservation annulée', booking: rows[0] });
+    }
+
+    // L'UPDATE n'a touché aucune ligne : on relit sans filtre pour déterminer
+    // la raison exacte et renvoyer le bon code (404 / 403 / 409). Cette lecture
+    // est uniquement diagnostique, elle n'entraîne aucune écriture donc aucune
+    // race condition possible ici.
+    const { rows: diagRows } = await pool.query(
+      'SELECT user_id, status, scheduled_at FROM bookings WHERE id = $1',
       [id]
     );
 
-    if (rows.length === 0) {
+    if (diagRows.length === 0) {
       return res.status(404).json({ error: 'Réservation introuvable' });
     }
 
-    const booking = rows[0];
-
+    const booking = diagRows[0];
     if (booking.user_id !== req.user.id) {
       return res.status(403).json({ error: 'Accès refusé à cette réservation' });
     }
-
-    if (booking.status === 'cancelled') {
+    if (booking.status !== 'confirmed') {
       return res.status(409).json({ error: 'Réservation déjà annulée' });
     }
-
-    const hoursUntilExperience = (new Date(booking.scheduled_at).getTime() - Date.now()) / (1000 * 60 * 60);
-    if (hoursUntilExperience <= CANCEL_WINDOW_HOURS) {
-      return res.status(403).json({
-        error: `Annulation impossible moins de ${CANCEL_WINDOW_HOURS}h avant l'expérience`,
-      });
-    }
-
-    const { rows: updatedRows } = await pool.query(
-      `UPDATE bookings SET status = 'cancelled', cancelled_at = NOW()
-       WHERE id = $1
-       RETURNING id, status`,
-      [id]
-    );
-
-    res.json({ message: 'Réservation annulée', booking: updatedRows[0] });
+    return res.status(403).json({
+      error: `Annulation impossible moins de ${CANCEL_WINDOW_HOURS}h avant l'expérience`,
+    });
   } catch (err) {
     next(err);
   }

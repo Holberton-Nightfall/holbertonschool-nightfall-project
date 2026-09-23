@@ -67,7 +67,7 @@ export async function getExperiences(req, res, next) {
     const params = [];
     let paramIndex = 1;
 
-    // Recherche partielle, insensible à la casse, sur le nom OU la description
+    // Filtre de recherche partielle sur le nom ou la description (insensible à la casse avec ILIKE)
     if (search) {
       query += ` AND (e.name ILIKE $${paramIndex} OR e.description ILIKE $${paramIndex})`;
       params.push(`%${search}%`);
@@ -135,6 +135,10 @@ export async function getExperienceById(req, res, next) {
   }
 }
 
+// --- Admin ---------------------------------------------------------------
+// Contrairement à getExperiences (public), renvoie TOUTES les expériences,
+// y compris archivées, avec le champ is_archived. Route protégée par
+// requireAuth + requireAdmin dans admin.routes.js.
 export async function getAllExperiencesAdmin(req, res, next) {
   try {
     const { rows } = await pool.query(
@@ -143,7 +147,7 @@ export async function getAllExperiencesAdmin(req, res, next) {
               c.id AS category_id, c.name AS category_name
        FROM experiences e
        JOIN categories c ON c.id = e.category_id
-       ORDER BY e.is_archived, e.name`
+       ORDER BY e.name`
     );
     res.json(rows);
   } catch (err) {
@@ -210,6 +214,7 @@ export async function updateExperience(req, res, next) {
     const fields = [];
     const params = [];
     let paramIndex = 1;
+    let categoryId; // conservé hors de la boucle pour être vérifié en base ci-dessous
 
     // Mise à jour partielle : seuls les champs fournis sont validés et modifiés
     if (name !== undefined) {
@@ -225,7 +230,7 @@ export async function updateExperience(req, res, next) {
       else { fields.push(`image_url = $${paramIndex++}`); params.push(image_url.trim()); }
     }
     if (category_id !== undefined) {
-      const categoryId = Number(category_id);
+      categoryId = Number(category_id);
       if (!Number.isInteger(categoryId)) errors.push('category_id doit être un identifiant valide');
       else { fields.push(`category_id = $${paramIndex++}`); params.push(categoryId); }
     }
@@ -257,6 +262,16 @@ export async function updateExperience(req, res, next) {
       return res.status(400).json({ error: 'Aucun champ à mettre à jour' });
     }
 
+    // Comme dans createExperience : on vérifie que la catégorie existe avant
+    // d'écrire, plutôt que de laisser Postgres renvoyer une violation de FK
+    // (23503) qui remonterait comme une 500 générique via errorHandler.
+    if (categoryId !== undefined) {
+      const { rows: categoryRows } = await pool.query('SELECT id FROM categories WHERE id = $1', [categoryId]);
+      if (categoryRows.length === 0) {
+        return res.status(400).json({ error: 'Données invalides', details: ['category_id ne correspond à aucune catégorie'] });
+      }
+    }
+
     params.push(id);
     const { rows } = await pool.query(
       `UPDATE experiences SET ${fields.join(', ')} WHERE id = $${paramIndex}
@@ -273,6 +288,8 @@ export async function updateExperience(req, res, next) {
   }
 }
 
+// Archive OU désarchive selon le body ({ is_archived: boolean }, true par défaut).
+// Nom aligné avec l'import attendu par admin.routes.js (setExperienceArchived).
 export async function setExperienceArchived(req, res, next) {
   try {
     const id = Number(req.params.id);
@@ -281,12 +298,12 @@ export async function setExperienceArchived(req, res, next) {
     }
 
     const { is_archived } = req.body ?? {};
-    // Body optionnel : sans body, comportement historique de la route = archiver
     const archived = is_archived === undefined ? true : is_archived;
     if (typeof archived !== 'boolean') {
       return res.status(400).json({ error: 'Données invalides', details: ['is_archived doit être un booléen'] });
     }
 
+    // Archivage plutôt que suppression : l'historique des réservations reste valide
     const { rows } = await pool.query(
       `UPDATE experiences SET is_archived = $1 WHERE id = $2
        RETURNING id, name, is_archived`,
