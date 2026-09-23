@@ -58,29 +58,33 @@ INSERT INTO experiences (name, description, image_url, category_id, duration_min
      '/images/kepler-station.jpeg', (SELECT id FROM categories WHERE name = 'Science-fiction'), 40, 3, 6, 30.00, TRUE);
 
 -- ---------- Réservations ----------
--- Dates relatives au premier démarrage : les cas de test restent valides quel que soit le jour de la démo
+-- Dates relatives au premier démarrage, à heure fixe de nuit (22 h-23 h, heure de Paris) :
+-- les écarts restent valides quel que soit le jour de la démo, et les créneaux restent
+-- cohérents avec les horaires du parc (22 h-6 h), quelle que soit l'heure du démarrage.
+-- Le double AT TIME ZONE 'Europe/Paris' est nécessaire : le conteneur tourne en UTC,
+-- donc date_trunc('day', NOW()) donnerait minuit UTC, soit 2 h du matin à Paris.
 INSERT INTO bookings (user_id, experience_id, scheduled_at, participants, status, cancelled_at) VALUES
     -- Annulable (plus de 48 h avant)
     ((SELECT id FROM users WHERE email = 'membre@nightfall.dev'),
      (SELECT id FROM experiences WHERE name LIKE 'Le Bunker 7%'),
-     date_trunc('hour', NOW()) + INTERVAL '10 days', 4, 'confirmed', NULL),
+     ((date_trunc('day', NOW() AT TIME ZONE 'Europe/Paris') + INTERVAL '10 days 23 hours') AT TIME ZONE 'Europe/Paris'), 4, 'confirmed', NULL),
 
     -- NON annulable (moins de 48 h avant)
     ((SELECT id FROM users WHERE email = 'membre@nightfall.dev'),
      (SELECT id FROM experiences WHERE name LIKE 'La Ruche%'),
-     date_trunc('hour', NOW()) + INTERVAL '24 hours', 2, 'confirmed', NULL),
+          ((date_trunc('day', NOW() AT TIME ZONE 'Europe/Paris') + INTERVAL '1 day 23 hours') AT TIME ZONE 'Europe/Paris'), 2, 'confirmed', NULL),
 
     -- Déjà annulée
     ((SELECT id FROM users WHERE email = 'membre@nightfall.dev'),
      (SELECT id FROM experiences WHERE name LIKE 'Le Convoi%'),
-     date_trunc('hour', NOW()) + INTERVAL '15 days', 6, 'cancelled', NOW()),
+          ((date_trunc('day', NOW() AT TIME ZONE 'Europe/Paris') + INTERVAL '15 days 22 hours 30 minutes') AT TIME ZONE 'Europe/Paris'), 6, 'cancelled', NOW()),
 
     -- Passée, sur l'expérience archivée
     ((SELECT id FROM users WHERE email = 'membre@nightfall.dev'),
      (SELECT id FROM experiences WHERE name LIKE 'Station Kepler%'),
-     date_trunc('hour', NOW()) - INTERVAL '5 days', 3, 'confirmed', NULL),
+          ((date_trunc('day', NOW() AT TIME ZONE 'Europe/Paris') - INTERVAL '5 days' + INTERVAL '23 hours') AT TIME ZONE 'Europe/Paris'), 3, 'confirmed', NULL),
 
     -- Appartient au 2e membre : le 1er ne doit ni la voir ni l'annuler
     ((SELECT id FROM users WHERE email = 'membre2@nightfall.dev'),
      (SELECT id FROM experiences WHERE name LIKE 'Ground Zero%'),
-     date_trunc('hour', NOW()) + INTERVAL '7 days', 5, 'confirmed', NULL);
+          ((date_trunc('day', NOW() AT TIME ZONE 'Europe/Paris') + INTERVAL '7 days 23 hours') AT TIME ZONE 'Europe/Paris'), 5, 'confirmed', NULL);

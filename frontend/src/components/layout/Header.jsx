@@ -5,14 +5,14 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { container } from '../../lib/classNames.js';
 
 const navLinkClass = ({ isActive }) =>
-  // py-3 en mobile pour une cible tactile confortable, py-2 dès le passage en nav desktop.
-  `block py-3 md:py-2 font-heading text-[.85rem] uppercase tracking-[.08em] transition-colors duration-300 ${
+  // py-3 en mobile/tablette pour une cible tactile confortable, py-2 dès le passage en nav desktop (lg).
+  `block py-3 lg:py-2 font-heading text-[.85rem] uppercase tracking-[.08em] transition-colors duration-300 ${
     isActive ? 'text-accent' : 'text-text-muted hover:text-accent-2'
   }`;
 
 export default function Header() {
   const { menuOpen, toggleMenu, closeMenu } = useApp();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ export default function Header() {
         </NavLink>
         <button
           type="button"
-          className="flex cursor-pointer flex-col gap-[5px] border-0 bg-transparent p-2.5 md:hidden"
+          className="flex cursor-pointer flex-col gap-[5px] border-0 bg-transparent p-2.5 lg:hidden"
           onClick={toggleMenu}
           aria-expanded={menuOpen}
           aria-controls="header-nav"
@@ -46,7 +46,7 @@ export default function Header() {
         </button>
         <nav
           id="header-nav"
-          className={`${menuOpen ? 'flex' : 'hidden'} absolute inset-x-0 top-full flex-col border-b border-border-accent bg-bg-elevated px-4 py-2 md:static md:flex md:flex-row md:gap-6 md:border-0 md:bg-transparent md:p-0`}
+          className={`${menuOpen ? 'flex' : 'hidden'} absolute inset-x-0 top-full flex-col border-b border-border-accent bg-bg-elevated px-4 py-2 lg:static lg:flex lg:flex-row lg:gap-6 lg:border-0 lg:bg-transparent lg:p-0`}
         >
           <NavLink to="/" end className={navLinkClass}>Accueil</NavLink>
           <NavLink to="/catalogue" className={navLinkClass}>Catalogue</NavLink>
@@ -54,7 +54,12 @@ export default function Header() {
           {isAuthenticated ? (
             <>
               <NavLink to="/compte" className={navLinkClass}>Mon compte</NavLink>
-              <button type="button" onClick={handleLogout} className={navLinkClass({ isActive: false })}>
+              {/* Lien affiché selon le rôle : confort d'interface uniquement,
+                  les routes admin restent protégées par le back. */}
+              {user?.role === 'admin' && (
+                <NavLink to="/admin" className={navLinkClass}>Admin</NavLink>
+              )}
+              <button type="button" onClick={handleLogout} className={`${navLinkClass({ isActive: false })} text-left`}>
                 Déconnexion
               </button>
             </>

@@ -15,8 +15,15 @@ export async function request(path, { headers, ...options } = {}) {
   return res.json();
 }
 
-export const getExperiences = () => request('/experiences');
+export const getExperiences = (params = {}) => {
+  const query = new URLSearchParams();
+  if (params.search) query.set('search', params.search);
+  if (params.category) query.set('category', params.category);
+  const qs = query.toString();
+  return request(`/experiences${qs ? `?${qs}` : ''}`);
+};
 export const getExperienceById = (id) => request(`/experiences/${id}`);
+export const getCategories = () => request('/categories');
 
 const withAuth = (token) => ({ Authorization: `Bearer ${token}` });
 
@@ -34,7 +41,4 @@ export const deleteAccount = (token) => request('/auth/me', { method: 'DELETE', 
 
 export const createBooking = (data, token) => request('/bookings', { method: 'POST', headers: withAuth(token), body: JSON.stringify(data) });
 export const getBookings = (token) => request('/bookings', { headers: withAuth(token) });
-
-// ⚠️ DELETE /api/bookings/:id documenté dans docs/routesAPI.md mais pas encore
-// implémenté côté backend : cet appel échouera tant que le backend n'est pas fait.
 export const cancelBooking = (id, token) => request(`/bookings/${id}`, { method: 'DELETE', headers: withAuth(token) });

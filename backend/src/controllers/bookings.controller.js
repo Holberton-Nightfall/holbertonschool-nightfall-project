@@ -1,6 +1,16 @@
+// backend/src/controllers/bookings.controller.js
 import { pool } from '../config/db.js';
 
 const CANCEL_WINDOW_HOURS = 48;
+
+// Plus grand entier accepté par une colonne PostgreSQL INTEGER
+const MAX_INT = 2147483647;
+
+function parsePositiveInt(value) {
+  if (typeof value !== 'string' || !/^\d+$/.test(value)) return null;
+  const n = Number(value);
+  return n > 0 && n <= MAX_INT ? n : null;
+}
 
 export async function createBooking(req, res, next) {
   try {
@@ -77,10 +87,11 @@ export async function getBookings(req, res, next) {
   }
 }
 
+
 export async function getBookingById(req, res, next) {
   try {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id)) {
+    const id = parsePositiveInt(req.params.id);
+    if (id === null) {
       return res.status(400).json({ error: 'Identifiant invalide' });
     }
 
@@ -111,8 +122,8 @@ export async function getBookingById(req, res, next) {
 
 export async function cancelBooking(req, res, next) {
   try {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id)) {
+    const id = parsePositiveInt(req.params.id);
+    if (id === null) {
       return res.status(400).json({ error: 'Identifiant invalide' });
     }
 
