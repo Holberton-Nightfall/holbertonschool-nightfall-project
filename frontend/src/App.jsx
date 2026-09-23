@@ -8,11 +8,18 @@ import ExperienceDetailTest from './pages/ExperienceDetailTest.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Account from './pages/Account.jsx';
+import Booking from './pages/Booking.jsx';
+import BookingConfirmation from './pages/BookingConfirmation.jsx';
 import About from './pages/About.jsx';
 import Terms from './pages/Terms.jsx';
 import NotFound from './pages/NotFound.jsx';
 import RequireAuth from './components/auth/RequireAuth.jsx';
+import RequireAdmin from './components/auth/RequireAdmin.jsx';
+import AdminExperiences from './pages/AdminExperiences.jsx';
 
+// Routeur principal : toutes les pages partagent le même Layout (header/footer).
+// RequireAuth protège les routes qui exigent une session (compte, réservation).
+// RequireAdmin protège en plus /admin, réservée au rôle admin.
 export default function App() {
   return (
     <Routes>
@@ -20,11 +27,17 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="catalogue" element={<Catalogue />} />
         <Route path="experiences/:id" element={<ExperienceDetail />} />
+        {/* /test et /test/:id : pages de vérification visuelle sur seed statique
+            (src/mocks/experiences.js), tant que GET /api/experiences n'est pas
+            branché. À supprimer une fois l'API dispo (voir docs/suivi.md). */}
         <Route path="test" element={<CatalogueTest />} />
         <Route path="test/:id" element={<ExperienceDetailTest />} />
         <Route path="connexion" element={<Login />} />
         <Route path="inscription" element={<Register />} />
         <Route path="compte" element={<RequireAuth><Account /></RequireAuth>} />
+        <Route path="admin" element={<RequireAdmin><AdminExperiences /></RequireAdmin>} />
+        <Route path="reservation/:id" element={<RequireAuth><Booking /></RequireAuth>} />
+        <Route path="reservation/:id/confirmation" element={<RequireAuth><BookingConfirmation /></RequireAuth>} />
         <Route path="about" element={<About />} />
         <Route path="conditions" element={<Terms />} />
         <Route path="*" element={<NotFound />} />

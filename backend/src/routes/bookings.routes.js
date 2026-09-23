@@ -1,6 +1,5 @@
 // backend/src/routes/bookings.routes.js
 import { Router } from 'express';
-import { Router } from 'express';
 import { createBooking, getBookings, getBookingById, cancelBooking } from '../controllers/bookings.controller.js';
 import { requireAuth } from '../middlewares/auth.js';
 

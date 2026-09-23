@@ -20,7 +20,7 @@ export async function requireAuth(req, res, next) {
 
     // Le rôle vient de la base, pas du token : il est toujours à jour
     const { rows } = await pool.query(
-      'SELECT id, first_name, last_name, email, role FROM users WHERE id = $1',
+      'SELECT id, first_name, last_name, email, role FROM users WHERE id = $1 AND deleted_at IS NULL',
       [Number(payload.sub)]
     );
     if (rows.length === 0) {

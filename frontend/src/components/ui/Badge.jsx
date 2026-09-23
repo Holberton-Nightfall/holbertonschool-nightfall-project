@@ -1,6 +1,9 @@
+// critical (rouge) : danger/intensité élevée, annulé, erreur.
+// secure (turquoise) : confirmé, validé, intensité faible.
 const VARIANTS = {
   critical: 'bg-accent/15 text-accent border-accent',
   secure: 'bg-accent-2/15 text-accent-2 border-accent-2',
+  muted: 'bg-text-muted/10 text-text-muted border-border',
 };
 
 export default function Badge({ variant = 'critical', className = '', ...props }) {

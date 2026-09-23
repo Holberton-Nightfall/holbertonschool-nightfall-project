@@ -6,10 +6,11 @@ import { getExperienceById } from '../services/api.js';
 
 const FALLBACK_IMAGE = '/images/nightfall.jpeg';
 
+// Fiche publique branchée sur GET /api/experiences/:id.
 export default function ExperienceDetail() {
   const { id } = useParams();
   const [experience, setExperience] = useState(null);
-  const [status, setStatus] = useState('loading');
+  const [status, setStatus] = useState('loading'); // loading | ready | not-found | error
 
   useEffect(() => {
     setStatus('loading');
@@ -59,9 +60,6 @@ export default function ExperienceDetail() {
         <li>Prix : {Number(e.price).toFixed(2)} €</li>
       </ul>
 
-      {/* La page /reservation/:id et l'API POST /api/bookings n'existent pas encore
-          (tâche feat/booking-form à venir) : le bouton est déjà relié à la route prévue,
-          elle mènera pour l'instant sur la 404 — à corriger quand booking-form sera fait. */}
       <Button to={`/reservation/${e.id}`} className="w-full sm:w-auto">Réserver</Button>
     </article>
   );

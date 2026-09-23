@@ -3,3 +3,4 @@ node_modules/
 dist/
 npm-debug.log*
 .DS_Store
+docs/rapport_jour_2.md

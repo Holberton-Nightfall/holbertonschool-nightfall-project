@@ -12,7 +12,7 @@ const navLinkClass = ({ isActive }) =>
 
 export default function Header() {
   const { menuOpen, toggleMenu, closeMenu } = useApp();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -54,6 +54,11 @@ export default function Header() {
           {isAuthenticated ? (
             <>
               <NavLink to="/compte" className={navLinkClass}>Mon compte</NavLink>
+              {/* Lien affiché selon le rôle : confort d'interface uniquement,
+                  les routes admin restent protégées par le back. */}
+              {user?.role === 'admin' && (
+                <NavLink to="/admin" className={navLinkClass}>Admin</NavLink>
+              )}
               <button type="button" onClick={handleLogout} className={navLinkClass({ isActive: false })}>
                 Déconnexion
               </button>
