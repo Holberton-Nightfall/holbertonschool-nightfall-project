@@ -524,7 +524,6 @@ Renvoie toutes les réservations, tous membres confondus, triées par `scheduled
     "user_id": 2,
     "first_name": "Alex",
     "last_name": "Martin",
-    "user_email": "membre@nightfall.dev",
     "experience_id": 1,
     "experience_name": "Le Bunker 7 — Protocole Lazare",
     "scheduled_at": "2026-10-15T21:00:00.000Z",
