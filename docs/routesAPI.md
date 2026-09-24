@@ -9,14 +9,7 @@ API REST (Node.js / Express / PostgreSQL) du parc immersif NIGHTFALL.
 
 > **Convention de nommage** : les champs JSON suivent les noms des colonnes PostgreSQL de `db/01_schema.sql` (`snake_case`), par exemple `image_url`, `duration_min`, `max_participants`. Les expériences sont renvoyées à plat, avec `category_id` et `category_name`.
 >
-> **Source de vérité** : `db/01_schema.sql`. Toute modification d'un nom de colonne se fait en même temps dans le schéma, le seed, le code et ce document.
-
-## Statut d'implémentation
-
-| Symbole | Signification |
-|---|---|
-| ✅ | Implémentée et mergée sur `main` |
-| ⏳ | Conçue, à implémenter |
+> **Source de vérité** : `db/01_schema.sql` pour les données, `backend/src/routes/` pour les URL. Toute modification se fait en même temps dans le code et dans ce document.
 
 ---
 
@@ -26,11 +19,11 @@ API REST (Node.js / Express / PostgreSQL) du parc immersif NIGHTFALL.
 |---|---|
 | 200 | Succès |
 | 201 | Ressource créée |
-| 400 | Données invalides |
+| 400 | Données ou paramètres invalides |
 | 401 | Non authentifié ou token invalide |
 | 403 | Droits insuffisants (non propriétaire, non admin, règle des 48 h) |
-| 404 | Ressource introuvable |
-| 409 | Conflit (email déjà utilisé, réservation déjà annulée…) |
+| 404 | Ressource ou route introuvable |
+| 409 | Conflit (email déjà utilisé, réservation déjà annulée) |
 | 500 | Erreur interne (message générique, détails dans les logs serveur) |
 
 Format d'erreur unique :
@@ -39,7 +32,7 @@ Format d'erreur unique :
 { "error": "Message lisible" }
 ```
 
-Pour une erreur de validation, un tableau `details` peut être ajouté :
+Pour une erreur de validation, un tableau `details` est ajouté :
 
 ```json
 {
@@ -48,38 +41,42 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 }
 ```
 
+Une URL inconnue renvoie `404 { "error": "Route introuvable" }`.
+
 ---
 
 ## Récapitulatif
 
-| Statut | Méthode | URL | Accès | Description |
-|---|---|---|---|---|
-| ✅ | GET | `/api/health` | Public | Vérifier que l'API répond |
-| ✅ | POST | `/api/auth/register` | Public | Créer un compte |
-| ✅ | POST | `/api/auth/login` | Public | Se connecter |
-| ✅ | GET | `/api/auth/me` | Connecté | Profil de l'utilisateur courant |
-| ✅ | PUT | `/api/auth/me` | Connecté | Modifier prénom/nom |
-| ✅ | PUT | `/api/auth/email` | Connecté | Modifier l'email |
-| ✅ | PUT | `/api/auth/password` | Connecté | Modifier le mot de passe |
-| ✅ | DELETE | `/api/auth/me` | Connecté | Supprimer le compte (soft delete) |
-| ✅ | GET | `/api/categories` | Public | Liste des catégories |
-| ✅ | GET | `/api/experiences` | Public | Catalogue, recherche et filtres |
-| ✅ | GET | `/api/experiences/:id` | Public | Fiche détaillée |
-| ✅ | POST | `/api/bookings` | Connecté | Réserver une expérience |
-| ✅ | GET | `/api/bookings` | Connecté | Mes réservations |
-| ✅ | GET | `/api/bookings/:id` | Propriétaire | Détail d'une réservation |
-| ✅ | DELETE | `/api/bookings/:id` | Propriétaire | Annuler (règle des 48 h) |
-| ✅ | GET | `/api/admin/experiences` | Admin | Toutes les expériences (archivées incluses) |
-| ✅ | POST | `/api/admin/experiences` | Admin | Créer une expérience |
-| ✅ | PUT | `/api/admin/experiences/:id` | Admin | Modifier une expérience |
-| ✅ | PATCH | `/api/admin/experiences/:id/archive` | Admin | Archiver ou restaurer |
-| ✅ | GET | `/api/admin/bookings` | Admin | Toutes les réservations |
+Les 20 routes ci-dessous sont implémentées et couvertes par `scripts/test-api.sh`.
+
+| Méthode | URL | Accès | Description |
+|---|---|---|---|
+| GET | `/api/health` | Public | Vérifier que l'API répond |
+| POST | `/api/auth/register` | Public | Créer un compte |
+| POST | `/api/auth/login` | Public | Se connecter |
+| GET | `/api/auth/me` | Connecté | Profil de l'utilisateur courant |
+| PUT | `/api/auth/me` | Connecté | Modifier prénom et nom |
+| PUT | `/api/auth/email` | Connecté | Modifier l'email |
+| PUT | `/api/auth/password` | Connecté | Modifier le mot de passe |
+| DELETE | `/api/auth/me` | Connecté | Supprimer le compte (soft delete) |
+| GET | `/api/categories` | Public | Liste des catégories |
+| GET | `/api/experiences` | Public | Catalogue, recherche et filtres |
+| GET | `/api/experiences/:id` | Public | Fiche détaillée |
+| POST | `/api/bookings` | Connecté | Réserver une expérience |
+| GET | `/api/bookings` | Connecté | Mes réservations |
+| GET | `/api/bookings/:id` | Propriétaire | Détail d'une réservation |
+| DELETE | `/api/bookings/:id` | Propriétaire | Annuler (règle des 48 h) |
+| GET | `/api/admin/experiences` | Admin | Toutes les expériences, archivées incluses |
+| POST | `/api/admin/experiences` | Admin | Créer une expérience |
+| PUT | `/api/admin/experiences/:id` | Admin | Modifier une expérience |
+| PATCH | `/api/admin/experiences/:id/archive` | Admin | Archiver ou restaurer |
+| GET | `/api/admin/bookings` | Admin | Toutes les réservations |
 
 ---
 
 ## Santé
 
-### `GET /api/health` ✅
+### `GET /api/health`
 
 **Accès** : public
 
@@ -93,7 +90,7 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 
 ## Authentification
 
-### `POST /api/auth/register` ✅
+### `POST /api/auth/register`
 
 **Accès** : public
 
@@ -110,9 +107,9 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 
 **Règles**
 
-- Tous les champs sont obligatoires.
-- L'email doit être valide et unique (l'unicité est insensible à la casse, via un index sur `lower(email)`).
-- Le mot de passe fait au moins 8 caractères et 72 octets au maximum (limite de bcrypt). Il est haché avec bcrypt et n'est jamais stocké ni renvoyé en clair.
+- `first_name` et `last_name` sont obligatoires, 100 caractères maximum.
+- L'email doit être valide et unique. L'unicité est insensible à la casse, via un index sur `lower(email)`.
+- Le mot de passe fait au moins 8 caractères et au plus 72 octets (limite de bcrypt). Il est haché avec bcrypt et n'est jamais stocké ni renvoyé en clair.
 - Le champ `role` n'est **jamais** lu depuis le body : tout nouveau compte est `member`.
 
 **Réponse 201**
@@ -126,7 +123,7 @@ Pour une erreur de validation, un tableau `details` peut être ajouté :
 
 **Erreurs** : 400 (validation), 409 (email déjà utilisé)
 
-### `POST /api/auth/login` ✅
+### `POST /api/auth/login`
 
 **Accès** : public
 
@@ -142,9 +139,9 @@ Le token contient uniquement l'identifiant (`sub`), la date d'émission et l'exp
 
 Un compte supprimé (`deleted_at` renseigné) ne peut plus se connecter.
 
-**Erreurs** : 400, 401 (message générique, sans préciser si c'est l'email ou le mot de passe qui est faux)
+**Erreurs** : 400, 401 (message générique « Identifiants invalides », sans préciser si c'est l'email ou le mot de passe qui est faux)
 
-### `GET /api/auth/me` ✅
+### `GET /api/auth/me`
 
 **Accès** : connecté
 
@@ -158,7 +155,7 @@ Un compte supprimé (`deleted_at` renseigné) ne peut plus se connecter.
 
 > La déconnexion se fait côté front en supprimant le token. Aucune route n'est nécessaire.
 
-### `PUT /api/auth/me` ✅
+### `PUT /api/auth/me`
 
 **Accès** : connecté
 
@@ -174,7 +171,7 @@ Un compte supprimé (`deleted_at` renseigné) ne peut plus se connecter.
 
 **Erreurs** : 400, 401
 
-### `PUT /api/auth/email` ✅
+### `PUT /api/auth/email`
 
 **Accès** : connecté
 
@@ -186,14 +183,14 @@ Un compte supprimé (`deleted_at` renseigné) ne peut plus se connecter.
 
 **Règles**
 
-- `new_email` doit être valide et différent de l'email actuel.
+- `new_email` doit être valide.
 - `new_email_confirmation` doit être identique à `new_email`.
 
-**Réponse 200** : l'utilisateur mis à jour.
+**Réponse 200** : l'utilisateur mis à jour, même structure que `GET /api/auth/me`.
 
 **Erreurs** : 400, 401, 409 (email déjà utilisé)
 
-### `PUT /api/auth/password` ✅
+### `PUT /api/auth/password`
 
 **Accès** : connecté
 
@@ -209,7 +206,7 @@ Un compte supprimé (`deleted_at` renseigné) ne peut plus se connecter.
 
 **Règles**
 
-- `current_password` doit correspondre au mot de passe actuel.
+- `current_password` est obligatoire et doit correspondre au mot de passe actuel.
 - `new_password` : 8 caractères minimum, 72 octets maximum.
 - `new_password_confirmation` doit être identique à `new_password`.
 
@@ -219,13 +216,13 @@ Un compte supprimé (`deleted_at` renseigné) ne peut plus se connecter.
 { "message": "Mot de passe modifié" }
 ```
 
-**Erreurs** : 400, 401 (mot de passe actuel incorrect ou non connecté)
+**Erreurs** : 400, 401 (non connecté, ou « Mot de passe actuel incorrect »)
 
-### `DELETE /api/auth/me` ✅
+### `DELETE /api/auth/me`
 
 **Accès** : connecté
 
-Suppression en **soft delete** : la ligne `users` est conservée (`deleted_at` renseigné), afin de ne pas casser l'historique des réservations liées (`bookings.user_id` est en `ON DELETE CASCADE`).
+Suppression en **soft delete** : la ligne `users` est conservée et `deleted_at` est renseigné. Une suppression réelle effacerait aussi les réservations du membre, car `bookings.user_id` est en `ON DELETE CASCADE` : le soft delete préserve cet historique.
 
 **Réponse 200**
 
@@ -241,7 +238,7 @@ Suppression en **soft delete** : la ligne `users` est conservée (`deleted_at` r
 
 ## Catégories
 
-### `GET /api/categories` ✅
+### `GET /api/categories`
 
 **Accès** : public
 
@@ -260,18 +257,21 @@ Les résultats sont triés par nom.
 
 ## Expériences (catalogue public)
 
-### `GET /api/experiences` ✅
+### `GET /api/experiences`
 
 **Accès** : public
 
-**Paramètres de requête** (tous optionnels)
+**Paramètres de requête** (tous optionnels, combinables)
 
 | Paramètre | Description | Exemple |
 |---|---|---|
-| `search` | Recherche partielle, insensible à la casse, sur le nom **ou** la description | `?search=bunker` |
-| `category` | Filtre par **id** de catégorie (entier, sinon 400) | `?category=2` |
+| `search` | Recherche partielle, insensible à la casse, sur le nom ou la description | `?search=bunker` |
+| `category` | Filtre par **id** de catégorie (entier) | `?category=2` |
+| `min_price` | Prix minimum (nombre positif ou nul) | `?min_price=20` |
+| `max_price` | Prix maximum (nombre positif ou nul, supérieur ou égal à `min_price`) | `?max_price=35` |
+| `intensity` | Niveau d'intensité (entier de 1 à 5) | `?intensity=4` |
 
-Les paramètres se combinent : `?search=bunker&category=1`.
+Exemple combiné : `?search=bunker&category=1&max_price=40`.
 
 **Réponse 200**
 
@@ -296,12 +296,12 @@ Les paramètres se combinent : `?search=bunker&category=1`.
 
 - Seules les expériences non archivées (`is_archived = false`) sont renvoyées. Pour les inclure, voir `GET /api/admin/experiences`.
 - Les requêtes SQL sont paramétrées (`$1`, `$2`) pour éviter toute injection.
-- `price` est renvoyé sous forme de chaîne, car le type `NUMERIC` de PostgreSQL est sérialisé ainsi par le driver `pg`. Le front doit le convertir avec `Number()` ou `parseFloat()` avant tout calcul.
-- Les images sont servies par le front depuis `frontend/public/images/experiences/`.
+- `price` est renvoyé sous forme de chaîne, car le type `NUMERIC` de PostgreSQL est sérialisé ainsi par le driver `pg`. Le front le convertit avec `Number()` avant tout calcul.
+- Les images sont servies par le front depuis `frontend/public/images/experiences/`. Un chemin invalide affiche l'image de secours.
 
-**Erreurs** : 400 (`category` n'est pas un entier)
+**Erreurs** : 400 (« Paramètres invalides », avec `details`)
 
-### `GET /api/experiences/:id` ✅
+### `GET /api/experiences/:id`
 
 **Accès** : public
 
@@ -311,16 +311,16 @@ Les paramètres se combinent : `?search=bunker&category=1`.
 
 | Code | Cas |
 |---|---|
-| 400 | `id` n'est pas un entier |
+| 400 | `id` n'est pas un entier (« Identifiant invalide ») |
 | 404 | Expérience inexistante ou archivée |
 
 ---
 
 ## Réservations (membre connecté)
 
-Toutes les routes de cette section exigent un token valide (401 sinon). L'utilisateur est toujours identifié par le token, jamais par le body.
+Toutes les routes de cette section passent par `requireAuth` (401 sinon). L'utilisateur est toujours identifié par le token, jamais par le body.
 
-### `POST /api/bookings` ✅
+### `POST /api/bookings`
 
 **Body**
 
@@ -334,10 +334,11 @@ Toutes les routes de cette section exigent un token valide (401 sinon). L'utilis
 
 **Vérifications côté back-end**
 
-1. L'expérience existe et n'est pas archivée.
-2. `scheduled_at` est une date valide, située dans le futur.
+1. `experience_id` est un entier.
+2. `scheduled_at` est une date ISO 8601 valide, située dans le futur.
 3. `participants` est un entier strictement positif.
-4. `participants` ne dépasse pas `max_participants` de l'expérience.
+4. L'expérience existe et n'est pas archivée (404 sinon).
+5. `participants` ne dépasse pas `max_participants` de l'expérience (400 sinon).
 
 **Réponse 201**
 
@@ -355,7 +356,7 @@ Toutes les routes de cette section exigent un token valide (401 sinon). L'utilis
 
 > Le paiement est simulé : la réservation est directement confirmée. La capacité cumulée par créneau n'est pas gérée dans le MVP.
 
-### `GET /api/bookings` ✅
+### `GET /api/bookings`
 
 Renvoie uniquement les réservations de l'utilisateur connecté, triées par `scheduled_at` croissant.
 
@@ -375,11 +376,11 @@ Renvoie uniquement les réservations de l'utilisateur connecté, triées par `sc
 ]
 ```
 
-`can_cancel` est calculé par le serveur (réservation confirmée et plus de 48 h avant l'expérience). Il sert uniquement à l'affichage : le vrai contrôle est fait par `DELETE /api/bookings/:id`.
+`can_cancel` est calculé en SQL par le serveur (réservation confirmée et plus de 48 h avant l'expérience). Il sert uniquement à l'affichage : le vrai contrôle est fait par `DELETE /api/bookings/:id`.
 
-> `created_at` et `cancelled_at` ne sont pas renvoyés par cette route. Ils le sont par `GET /api/admin/bookings`.
+`created_at` et `cancelled_at` ne sont pas renvoyés par cette route. Ils le sont par `GET /api/admin/bookings`.
 
-### `GET /api/bookings/:id` ✅
+### `GET /api/bookings/:id`
 
 **Réponse 200** : le détail d'une réservation, même structure qu'un élément de la liste.
 
@@ -392,11 +393,11 @@ Renvoie uniquement les réservations de l'utilisateur connecté, triées par `sc
 | 403 | La réservation appartient à un autre utilisateur |
 | 404 | Réservation inexistante |
 
-### `DELETE /api/bookings/:id` ✅
+### `DELETE /api/bookings/:id`
 
-Annule une réservation. La ligne n'est pas supprimée : son statut passe à `cancelled` et `cancelled_at` est renseigné, dans la même requête (la contrainte `chk_bookings_cancelled` impose que les deux soient cohérents).
+Annule une réservation. La ligne n'est pas supprimée : son statut passe à `cancelled` et `cancelled_at` est renseigné dans la même requête (la contrainte `chk_bookings_cancelled` impose que les deux soient cohérents).
 
-L'annulation est faite par un `UPDATE` conditionnel unique : la fenêtre des 48 h est vérifiée par la base au moment de l'écriture, ce qui évite toute situation de concurrence entre deux annulations simultanées. Si aucune ligne n'est touchée, une requête de diagnostic détermine le code d'erreur à renvoyer.
+L'annulation est un `UPDATE` conditionnel unique : la fenêtre des 48 h est vérifiée par la base au moment de l'écriture, ce qui évite toute situation de concurrence. Si aucune ligne n'est touchée, une requête de diagnostic détermine le code d'erreur.
 
 **Cas d'erreur**
 
@@ -418,11 +419,11 @@ L'annulation est faite par un `UPDATE` conditionnel unique : la fenêtre des 48 
 
 ## Administration
 
-Toutes les routes de cette section passent par deux middlewares : `requireAuth` (401 si non connecté) puis `requireAdmin` (403 si le rôle n'est pas `admin`).
+Toutes les routes de cette section sont montées sous `/api/admin` et passent par deux middlewares : `requireAuth` (401 si non connecté) puis `requireAdmin` (403 si le rôle n'est pas `admin`).
 
-### `GET /api/admin/experiences` ✅
+### `GET /api/admin/experiences`
 
-Renvoie **toutes** les expériences, archivées incluses, avec le champ `is_archived`. Triées par `is_archived` puis par nom : les actives d'abord.
+Renvoie toutes les expériences, archivées incluses, triées par `is_archived` puis par nom : les actives d'abord.
 
 **Réponse 200** : même structure que `GET /api/experiences`, plus `is_archived`.
 
@@ -446,7 +447,7 @@ Renvoie **toutes** les expériences, archivées incluses, avec le champ `is_arch
 
 **Erreurs** : 401, 403
 
-### `POST /api/admin/experiences` ✅
+### `POST /api/admin/experiences`
 
 **Body**
 
@@ -463,29 +464,29 @@ Renvoie **toutes** les expériences, archivées incluses, avec le champ `is_arch
 }
 ```
 
-**Validation** : champs obligatoires, `category_id` doit exister, `duration_min` et `max_participants` strictement positifs, `price` positif ou nul, `intensity` entre 1 et 5.
+**Validation** : tous les champs sont obligatoires, `category_id` doit exister, `duration_min` et `max_participants` sont des entiers strictement positifs, `price` est positif ou nul, `intensity` est un entier entre 1 et 5.
 
-**Réponse 201** : l'expérience créée, avec son `id` et `is_archived: false`.
+**Réponse 201** : l'expérience créée, avec son `id` et `is_archived: false`. `category_name` n'est pas renvoyé.
 
 **Erreurs** : 400 (validation ou catégorie inexistante), 401, 403
 
-### `PUT /api/admin/experiences/:id` ✅
+### `PUT /api/admin/experiences/:id`
 
-**Body** : mêmes champs que pour la création. **Mise à jour partielle** : seuls les champs fournis sont validés et modifiés.
+**Body** : mêmes champs que pour la création. Mise à jour partielle : seuls les champs fournis sont validés et modifiés.
 
 ```json
 { "price": 39.9 }
 ```
 
-**Réponse 200** : l'expérience modifiée.
+**Réponse 200** : l'expérience modifiée, même structure que la création.
 
-**Erreurs** : 400 (validation ou body vide), 401, 403, 404
+**Erreurs** : 400 (identifiant invalide, validation, catégorie inexistante ou « Aucun champ à mettre à jour »), 401, 403, 404
 
-> La sémantique HTTP stricte voudrait `PATCH` pour une mise à jour partielle. `PUT` est conservé pour le MVP ; renommage possible après.
+> La sémantique HTTP stricte voudrait `PATCH` pour une mise à jour partielle. `PUT` est conservé pour le MVP.
 
-### `PATCH /api/admin/experiences/:id/archive` ✅
+### `PATCH /api/admin/experiences/:id/archive`
 
-Archive ou restaure une expérience. Aucune suppression physique : l'historique des réservations reste valide, et une expérience archivée disparaît du catalogue public.
+Archive ou restaure une expérience. Il n'y a aucune suppression physique d'expérience dans l'API : l'historique des réservations reste valide (`ON DELETE RESTRICT`), et une expérience archivée disparaît du catalogue public.
 
 **Body** (optionnel)
 
@@ -494,7 +495,7 @@ Archive ou restaure une expérience. Aucune suppression physique : l'historique 
 ```
 
 - `true` archive, `false` restaure.
-- Sans body, la route archive (comportement par défaut).
+- Sans body, la route archive.
 - Toute autre valeur qu'un booléen renvoie 400.
 
 **Réponse 200**
@@ -510,9 +511,9 @@ Le message devient « Expérience désarchivée » lorsque `is_archived` vaut `f
 
 **Erreurs** : 400, 401, 403, 404
 
-### `GET /api/admin/bookings` ✅
+### `GET /api/admin/bookings`
 
-Renvoie **toutes** les réservations, tous membres confondus, triées par `scheduled_at` décroissant.
+Renvoie toutes les réservations, tous membres confondus, triées par `scheduled_at` décroissant.
 
 **Réponse 200**
 
@@ -523,6 +524,7 @@ Renvoie **toutes** les réservations, tous membres confondus, triées par `sched
     "user_id": 2,
     "first_name": "Alex",
     "last_name": "Martin",
+    "user_email": "membre@nightfall.dev",
     "experience_id": 1,
     "experience_name": "Le Bunker 7 — Protocole Lazare",
     "scheduled_at": "2026-10-15T21:00:00.000Z",
@@ -534,11 +536,11 @@ Renvoie **toutes** les réservations, tous membres confondus, triées par `sched
 ]
 ```
 
-> `can_cancel` n'est pas renvoyé : la vue admin est en lecture seule.
->
-> **Bonus (P3, après le MVP)** : filtres optionnels `experience_id`, `status`, `from`, `to`.
+`can_cancel` n'est pas renvoyé : la vue admin est en lecture seule.
 
 **Erreurs** : 401, 403
+
+> **Bonus (après le MVP)** : filtres optionnels `experience_id`, `status`, `from`, `to`.
 
 ---
 
@@ -549,6 +551,6 @@ Renvoie **toutes** les réservations, tous membres confondus, triées par `sched
 - Le JWT ne contient que l'identifiant : le rôle est relu en base à chaque requête, donc toujours à jour.
 - Requêtes SQL paramétrées.
 - Règle des 48 h et propriété d'une réservation vérifiées côté back-end, par un `UPDATE` conditionnel atomique.
-- Routes admin protégées par `requireAuth` + `requireAdmin`.
+- Routes admin regroupées sous `/api/admin` et protégées par `requireAuth` + `requireAdmin`.
 - En-têtes de sécurité via `helmet`, CORS limité à l'origine du front.
 - Aucun secret dans le dépôt : `.env` est ignoré par Git, `.env.example` contient uniquement des valeurs de développement.
