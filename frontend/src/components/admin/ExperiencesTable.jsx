@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Badge from '../ui/Badge.jsx';
 import Button from '../ui/Button.jsx';
+import ExperienceForm from './ExperienceForm.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function ExperiencesTable() {
@@ -11,12 +12,28 @@ export default function ExperiencesTable() {
   // id de la ligne en cours de modification : désactive son bouton le temps de l'appel
   const [pendingId, setPendingId] = useState(null);
   const [actionError, setActionError] = useState(null);
+  // Formulaire ouvert : null (fermé) | 'new' (création) | objet expérience (modification)
+  const [editing, setEditing] = useState(null);
 
-  useEffect(() => {
+  // Réutilisé au montage et après chaque enregistrement : le POST/PUT ne renvoie
+  // pas category_name, on relit donc la liste depuis le serveur.
+  const load = () =>
     getAdminExperiences()
       .then((data) => { setExperiences(data); setStatus('ready'); })
       .catch((err) => { setError(err.message || 'Chargement impossible'); setStatus('error'); });
-  }, []);
+
+  useEffect(() => { load(); }, []);
+
+  const openForm = (target) => {
+    setActionError(null);
+    setEditing(target);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSaved = () => {
+    setEditing(null);
+    load();
+  };
 
   const handleArchive = async (exp) => {
     setActionError(null);
@@ -37,9 +54,18 @@ export default function ExperiencesTable() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <Button disabled>Nouvelle expérience</Button>
-      </div>
+      {editing ? (
+        <ExperienceForm
+          key={editing === 'new' ? 'new' : editing.id}
+          experience={editing === 'new' ? undefined : editing}
+          onSaved={handleSaved}
+          onCancel={() => setEditing(null)}
+        />
+      ) : (
+        <div className="flex justify-end">
+          <Button onClick={() => openForm('new')}>Nouvelle expérience</Button>
+        </div>
+      )}
 
       {status === 'loading' && <p className="text-text-muted">Chargement…</p>}
       {status === 'error' && <p role="alert" className="text-accent">{error}</p>}
@@ -74,7 +100,13 @@ export default function ExperiencesTable() {
                   </td>
                   <td className="p-3">
                     <div className="flex gap-2">
-                      <Button variant="ghost" disabled>Modifier</Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => openForm(e)}
+                        disabled={editing !== null || pendingId === e.id}
+                      >
+                        Modifier
+                      </Button>
                       <Button
                         variant="ghost"
                         onClick={() => handleArchive(e)}
