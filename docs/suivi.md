@@ -7,7 +7,7 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 | Tâche | Responsable | Branche | Statut |
 |---|---|---|---|
 | Docker Compose, Dockerfiles, `.env.example` | Benjamin | `feat/docker-compose` | ✅ |
-| Document de conception | Équipe | `docs/conception` | 🟡 |
+| Document de conception | Équipe | `docs/conception` | ✅ |
 | Contrat d'API (`docs/API.md`) | Jason | `docs/api-contract` | ✅ |
 | Schéma SQL + seed minimal | Jason | `feat/db-schema` | ✅ |
 | Initialisation Express + `GET /api/health` | Jason | `feat/backend-init` | ✅ |
@@ -41,7 +41,7 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 | Recherche + filtre catégorie (interface) | Tom | `feat/search-filters` | ✅ |
 | Déconnexion + bouton d'annulation | Tom | `feat/cancel-booking` | ✅ |
 | Responsive + charte graphique NIGHTFALL | Tom | `feat/responsive` | ✅ |
-| Espace admin : gestion des expériences | Benjamin | `feat/admin-experiences` | 🟡 |
+| Espace admin : gestion des expériences | Benjamin | `feat/admin-experiences` | ✅ |
 | Espace admin : liste des réservations | Benjamin | `feat/admin-bookings` | ✅ |
 | Supprimer page test | Tom | `delete/test-page` | ✅ |
 
@@ -50,8 +50,8 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 | Tâche | Responsable | Branche | Statut |
 |---|---|---|---|
 | Vérification sécurité (validations, droits, secrets) | Jason | `fix/security` | ⬜ |
-| Test complet depuis un clone propre (`docker compose up`) | Benjamin | — | ⬜ |
-| Recette du parcours Visiteur ➔ Réservation ➔ Annulation ➔ Admin | Benjamin | — | ⬜ |
-| Corrections des bugs remontés | Équipe | `fix/...` | ⬜ |
+| Test complet depuis un clone propre (`docker compose up`) | Benjamin | — | ✅ |
+| Recette du parcours Visiteur ➔ Réservation ➔ Annulation ➔ Admin | Benjamin | — | ✅ |
+| Corrections des bugs remontés | Équipe | `fix/...` | ✅ |
 | README final (fonctionnalités, lancement, comptes de démo) | Benjamin | `docs/readme-final` | ⬜ |
 | Support de soutenance | Équipe | — | ⬜ |
