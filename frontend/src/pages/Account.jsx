@@ -152,7 +152,11 @@ function PasswordSection() {
     setError(null);
     setStatus('saving');
     try {
-      await updatePassword({ current_password: currentPassword, new_password: newPassword });
+      await updatePassword({
+        current_password: currentPassword,
+        new_password: newPassword,
+        new_password_confirmation: confirmPassword,
+      });
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
