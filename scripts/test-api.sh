@@ -109,10 +109,25 @@ check "Mot de passe actuel incorrect" 401 -X PUT "$API/auth/password" "${NEW_AUT
   -d '{"current_password":"mauvais","new_password":"nouveaumdp456","new_password_confirmation":"nouveaumdp456"}'
 check "Confirmation de mot de passe différente" 400 -X PUT "$API/auth/password" "${NEW_AUTH[@]}" \
   -d '{"current_password":"motdepasse123","new_password":"nouveaumdp456","new_password_confirmation":"autre"}'
+check "Confirmation d'email différente" 400 -X PUT "$API/auth/email" "${NEW_AUTH[@]}" \
+  -d "{\"new_email\":\"autre_$EMAIL\",\"new_email_confirmation\":\"x_$EMAIL\"}"
+
+# Cas nominaux : nouvel email puis nouveau mot de passe, vérifiés par une reconnexion
+NEW_EMAIL="new_$EMAIL"
+check "Modifier l'email" 200 -X PUT "$API/auth/email" "${NEW_AUTH[@]}" \
+  -d "{\"new_email\":\"$NEW_EMAIL\",\"new_email_confirmation\":\"$NEW_EMAIL\"}"
+grep -q "\"email\":\"$NEW_EMAIL\"" /tmp/nf_body && echo "   → email mis à jour" || echo "   ⚠️ email non mis à jour"
+check "Modifier le mot de passe" 200 -X PUT "$API/auth/password" "${NEW_AUTH[@]}" \
+  -d '{"current_password":"motdepasse123","new_password":"nouveaumdp456","new_password_confirmation":"nouveaumdp456"}'
+check "Connexion avec le nouvel email et le nouveau mot de passe" 200 -X POST "$API/auth/login" -H "Content-Type: application/json" \
+  -d "{\"email\":\"$NEW_EMAIL\",\"password\":\"nouveaumdp456\"}"
+check "Connexion avec l'ancien email refusée" 401 -X POST "$API/auth/login" -H "Content-Type: application/json" \
+  -d "{\"email\":\"$EMAIL\",\"password\":\"nouveaumdp456\"}"
+
 check "Suppression du compte" 200 -X DELETE "$API/auth/me" "${NEW_AUTH[@]}"
 check "Token d'un compte supprimé" 401 "$API/auth/me" -H "Authorization: Bearer $TOKEN_NEW"
 check "Connexion d'un compte supprimé" 401 -X POST "$API/auth/login" -H "Content-Type: application/json" \
-  -d "{\"email\":\"$EMAIL\",\"password\":\"motdepasse123\"}"
+  -d "{\"email\":\"$NEW_EMAIL\",\"password\":\"nouveaumdp456\"}"
 
 echo; echo "=== Réservations (membre@nightfall.dev) ==="
 AUTH=(-H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN")
