@@ -87,7 +87,7 @@ function EmailSection({ user }) {
     setError(null);
     setStatus('saving');
     try {
-      await updateEmail({ email: newEmail });
+      await updateEmail({ new_email: newEmail, new_email_confirmation: confirmEmail });
       setNewEmail('');
       setConfirmEmail('');
       setStatus('done');
@@ -152,7 +152,11 @@ function PasswordSection() {
     setError(null);
     setStatus('saving');
     try {
-      await updatePassword({ current_password: currentPassword, new_password: newPassword });
+      await updatePassword({
+        current_password: currentPassword,
+        new_password: newPassword,
+        new_password_confirmation: confirmPassword,
+      });
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
