@@ -25,37 +25,37 @@ INSERT INTO users (first_name, last_name, email, password_hash, role) VALUES
 INSERT INTO experiences (name, description, image_url, category_id, duration_min, intensity, max_participants, price) VALUES
     ('Le Bunker 7 — Protocole Lazare',
      'Équipe d''extraction envoyée dans un bunker souterrain. Réactivez le générateur principal et récupérez les recherches du Dr. Vance tout en échappant aux anciens occupants contaminés.',
-     '/images/bunker-7.jpeg', (SELECT id FROM categories WHERE name = 'Survie'), 45, 4, 6, 35.00),
+     '/images/experiences/bunker-7.jpeg', (SELECT id FROM categories WHERE name = 'Survie'), 45, 4, 6, 35.00),
 
     ('La Zone Morte — Évacuation d''Urgence',
      'Votre véhicule blindé est en panne en pleine zone de quarantaine. Le point d''extraction est à 500 mètres : courez, traversez des ruines et débloquez des accès sous une attaque constante de Rôdeurs.',
-     '/images/dead-zone.jpeg', (SELECT id FROM categories WHERE name = 'Action'), 30, 3, 10, 28.00),
+     '/images/experiences/dead-zone.jpeg', (SELECT id FROM categories WHERE name = 'Action'), 30, 3, 10, 28.00),
 
     ('L''Abattoir — Le Festin des Mutants',
      'Enchaînés dans une chambre froide, vous êtes aux mains d''une tribu de cannibales mutants. Libérez-vous et trouvez la sortie avant leur retour. Effets gore et obscurité totale.',
-     '/images/slaughterhouse.jpeg', (SELECT id FROM categories WHERE name = 'Horreur'), 50, 5, 4, 42.00),
+     '/images/experiences/slaughterhouse.jpeg', (SELECT id FROM categories WHERE name = 'Horreur'), 50, 5, 4, 42.00),
 
     ('La Ruche — Cyber-Infection',
      'Une IA tente d''infecter l''humanité avec un nano-virus. Infiltrez le complexe, hackez les terminaux et évitez les drones ainsi que les humains « Transférés » pour détruire le noyau central.',
-     '/images/cyber-hive.jpeg', (SELECT id FROM categories WHERE name = 'Science-fiction'), 40, 3, 8, 32.00),
+     '/images/experiences/cyber-hive.jpeg', (SELECT id FROM categories WHERE name = 'Science-fiction'), 40, 3, 8, 32.00),
 
     ('Le Convoi — Terre Brûlée',
      'Traversez un canyon désertique à bord de camions blindés. Équipés de lanceurs, défendez le convoi contre les vagues de pillards en buggys.',
-     '/images/wasteland-convoy.jpeg', (SELECT id FROM categories WHERE name = 'Action'), 30, 2, 20, 25.00),
+     '/images/experiences/wasteland-convoy.jpeg', (SELECT id FROM categories WHERE name = 'Action'), 30, 2, 20, 25.00),
 
     ('Ground Zero — La Dernière Résistance',
      'Retranchés dans une église fortifiée, tenez votre position pendant 20 minutes avec des munitions limitées. Barricadez les accès et repoussez les hordes en attendant l''hélicoptère d''évacuation.',
-     '/images/ground-zero.jpeg', (SELECT id FROM categories WHERE name = 'Survie'), 35, 4, 15, 38.00),
+     '/images/experiences/ground-zero.jpeg', (SELECT id FROM categories WHERE name = 'Survie'), 35, 4, 15, 38.00),
 
     ('Le Laboratoire Omega — Code Rouge',
      'Une fuite a déclenché le confinement du laboratoire Omega. Vous avez 60 minutes pour résoudre les énigmes du système de sécurité, reconstituer l''antidote et ouvrir le sas avant la stérilisation totale du bâtiment.',
-     '/images/omega-lab.jpeg', (SELECT id FROM categories WHERE name = 'Escape Game'), 60, 2, 6, 30.00);
+     '/images/experiences/laboratoire-omega.jpeg', (SELECT id FROM categories WHERE name = 'Escape Game'), 60, 2, 6, 30.00);
 
 -- Expérience archivée : n'apparaît plus au catalogue, mais sa réservation passée reste valide
 INSERT INTO experiences (name, description, image_url, category_id, duration_min, intensity, max_participants, price, is_archived) VALUES
     ('Station Kepler — Dernier Signal',
      'Ancienne expérience : l''équipage d''une station orbitale ne répond plus. Rétablissez le contact avant la chute de l''orbite.',
-     '/images/kepler-station.jpeg', (SELECT id FROM categories WHERE name = 'Science-fiction'), 40, 3, 6, 30.00, TRUE);
+     '/images/experiences/kepler-station.jpeg', (SELECT id FROM categories WHERE name = 'Science-fiction'), 40, 3, 6, 30.00, TRUE);
 
 -- ---------- Réservations ----------
 -- Dates relatives au premier démarrage, à heure fixe de nuit (22 h-23 h, heure de Paris) :
