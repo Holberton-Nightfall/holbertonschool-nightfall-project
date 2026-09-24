@@ -52,3 +52,6 @@ export const setExperienceArchived = (id, isArchived, token) =>
   });
 
 export const getAllBookings = (token) => request('/admin/bookings', { headers: withAuth(token) });
+
+export const createExperience = (data, token) => request('/admin/experiences', { method: 'POST', headers: withAuth(token), body: JSON.stringify(data) });
+export const updateExperience = (id, data, token) => request(`/admin/experiences/${id}`, { method: 'PUT', headers: withAuth(token), body: JSON.stringify(data) });
