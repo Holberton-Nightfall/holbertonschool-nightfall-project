@@ -17,6 +17,7 @@ bash scripts/test-api.sh
 
 - [x] Démarrage sans `.env` : 3 services lancés, base `healthy`
 - [x] `scripts/test-api.sh` : 76/76 sur base fraîche
+- [x] `scripts/test-api.sh` : 81/81 après ajout des cas nominaux email et mot de passe
 
 ## Comptes de démo
 
