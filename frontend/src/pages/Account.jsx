@@ -87,7 +87,7 @@ function EmailSection({ user }) {
     setError(null);
     setStatus('saving');
     try {
-      await updateEmail({ email: newEmail });
+      await updateEmail({ new_email: newEmail, new_email_confirmation: confirmEmail });
       setNewEmail('');
       setConfirmEmail('');
       setStatus('done');
