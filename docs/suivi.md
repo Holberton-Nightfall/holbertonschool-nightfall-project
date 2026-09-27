@@ -53,5 +53,5 @@ Statuts : ⬜ À faire · 🟡 En cours · ✅ Fait - mis à jour à chaque merg
 | Test complet depuis un clone propre (`docker compose up`) | Benjamin | — | ✅ |
 | Recette du parcours Visiteur ➔ Réservation ➔ Annulation ➔ Admin | Benjamin | — | ✅ |
 | Corrections des bugs remontés | Équipe | `fix/...` | ✅ |
-| README final (fonctionnalités, lancement, comptes de démo) | Benjamin | `docs/readme-final` | ⬜ |
-| Support de soutenance | Équipe | — | ⬜ |
+| README final (fonctionnalités, lancement, comptes de démo) | Benjamin | `docs/readme-final` | ✅ |
+| Support de soutenance | Équipe | — | ✅ |
